@@ -29,7 +29,7 @@ class ParticleFilter {
  public:
   // Constructor
   // @param num_particles Number of particles
-  ParticleFilter() : num_particles(0), is_initialized(false) {}
+  ParticleFilter() : num_particles_(0), is_initialized_(false) {}
 
   // Destructor
   ~ParticleFilter() {}
@@ -99,7 +99,7 @@ class ParticleFilter {
    * initialized Returns whether particle filter is initialized yet or not.
    */
   const bool initialized() const {
-    return is_initialized;
+    return is_initialized_;
   }
 
   /**
