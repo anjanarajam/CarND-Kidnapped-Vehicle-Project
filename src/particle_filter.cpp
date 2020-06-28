@@ -30,20 +30,90 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 0;  // TODO: Set the number of particles
+   // TODO: Set the number of particles
+  num_particles_ = 256;  
+  /*Random number engine class that generates pseudo random numbers*/
+  std::default_random_engine gen;
+  /* Standard deviation values for x, y and theta*/
+  double std_x{}, std_y{}, std_theta{};
+  /* Create an object for the particle */
+  Particle obj_part;
+  
+  /* If not initialized */
+  while (!(initialized())) {
+      /* Get standard deviation values for x, y and theta */
+      std_x = std[0];
+      std_y = std[1];
+      std_theta = std[2];
 
+      /* create a normal (Gaussian) distribution for x, y and theta 
+      around mean x, y, and theta and standard deviation std_x, std_y and std_theta */
+      std::normal_distribution<double> dist_x(x, std_x);
+      std::normal_distribution<double> dist_y(y, std_y);
+      std::normal_distribution<double> dist_theta(theta, std_theta);
+
+      /* Allocate memory to the vector */
+      particles_.reserve(256);
+
+      /* Get the values for the Particle structure */
+      for (int i = 0; i < num_particles_; i++) {
+          obj_part.id = i;
+          obj_part.x = dist_x(gen);
+          obj_part.y = dist_y(gen);
+          obj_part.theta = dist_theta(gen);
+          obj_part.weight = 1.0;
+          particles_.push_back(obj_part);
+      }
+      
+      /* Initialize to true after initializing the particles */
+      is_initialized_ = true;
+  }
 }
 
-void ParticleFilter::prediction(double delta_t, double std_pos[], 
-                                double velocity, double yaw_rate) {
-  /**
-   * TODO: Add measurements to each particle and add random Gaussian noise.
-   * NOTE: When adding noise you may find std::normal_distribution 
-   *   and std::default_random_engine useful.
-   *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
-   *  http://www.cplusplus.com/reference/random/default_random_engine/
-   */
+void ParticleFilter::prediction(double delta_t, double std_pos[],
+    double velocity, double yaw_rate) {
+    /**
+     * TODO: Add measurements to each particle and add random Gaussian noise.
+     * NOTE: When adding noise you may find std::normal_distribution
+     *   and std::default_random_engine useful.
+     *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
+     *  http://www.cplusplus.com/reference/random/default_random_engine/
+     */
 
+    /* Random number engine class that generates pseudo random numbers */
+    std::default_random_engine gen;
+    /* Standard deviation values for x, y and theta*/
+    double std_x{}, std_y{}, std_theta{};
+
+    /* Get standard deviation values for x, y and theta */
+    std_x = std_pos[0];
+    std_y = std_pos[1];
+    std_theta = std_pos[2];
+
+    /* create a noise (Gaussian noise) distribution for x, y and theta
+    around mean 0 and standard deviation std_x, std_y and std_theta */
+    std::normal_distribution<double> dist_x(0, std_pos[0]);
+    std::normal_distribution<double> dist_y(0, std_pos[1]);
+    std::normal_distribution<double> dist_theta(0, std_pos[2]);
+
+    /* Every particle is moved at certain distance at a certain heading after delta t */
+    for_each (particles_.begin(), particles_.end(), [&](Particle particle)
+        {
+            if (yaw_rate < 0.001) {
+                particle.x += velocity * delta_t * sin(particle.theta);
+                particle.y += velocity * delta_t * cos(particle.theta);
+            }
+            else {
+                particle.x += velocity / yaw_rate * (sin(particle.theta + yaw_rate * delta_t) - sin(particle.theta));
+                particle.y += velocity / yaw_rate * (cos(particle.theta) - cos(particle.theta + yaw_rate * delta_t));
+                particle.theta += yaw_rate * delta_t;
+            }
+
+            /* Add noise to every particle after upating it with motion */
+            particle.x += dist_x(gen);
+            particle.y += dist_y(gen);
+            particle.theta += dist_theta(gen);
+        });
 }
 
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, 
@@ -57,6 +127,31 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   during the updateWeights phase.
    */
 
+    /* Define variables for finding nearest neighbour assigning nearest distance */
+    double nearest_neighbour{}, minimum_distance{};
+
+    /*For all the observated landmarks or the map landmarks */
+    for (auto& obs_meas : observations) {
+
+        /* Take minimum diatance as the maximum for the initial comparison*/
+        minimum_distance = std::numeric_limits<double>::max();
+
+        /*For all the predicted landmarks or the measured landmarks */
+        for (const auto& pred_meas : predicted) {
+            /*the nearest neighbour is calculated by finding eucledian distance between 
+            predicted and obsereved points  */
+            nearest_neighbour = dist(pred_meas.x, pred_meas.y, obs_meas.x, obs_meas.y);
+
+            /* Find the nearest neighbour by finding the minimum distance between 
+            predicted and obsereved landmark */
+            if (nearest_neighbour < minimum_distance) {
+                minimum_distance = nearest_neighbour;
+                /* Assign that measured landmark id to the observed id who is the
+                nearest neighbour */
+                obs_meas.id = pred_meas.id;
+            }
+        }
+    }
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 

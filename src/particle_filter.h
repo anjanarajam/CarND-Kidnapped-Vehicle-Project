@@ -109,17 +109,17 @@ class ParticleFilter {
   std::string getSenseCoord(Particle best, std::string coord);
 
   // Set of current particles
-  std::vector<Particle> particles;
+  std::vector<Particle> particles_;
 
  private:
   // Number of particles to draw
-  int num_particles; 
+  int num_particles_; 
   
   // Flag, if filter is initialized
-  bool is_initialized;
+  bool is_initialized_;
   
   // Vector of weights of all particles
-  std::vector<double> weights; 
+  std::vector<double> weights_; 
 };
 
 #endif  // PARTICLE_FILTER_H_
