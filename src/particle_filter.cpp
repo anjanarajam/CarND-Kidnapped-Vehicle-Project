@@ -136,7 +136,11 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
         /* Take minimum diatance as the maximum for the initial comparison*/
         minimum_distance = std::numeric_limits<double>::max();
 
-        /*For all the predicted landmarks or the measured landmarks */
+        /* Set initial nearest particle id to -1 to ensure that the predicted measurement was 
+        mapped to the observed one */
+        obs_meas.id = -1;
+
+        /*For all the predicted landmarks or the measured landmarks using sensors */
         for (const auto& pred_meas : predicted) {
             /*the nearest neighbour is calculated by finding eucledian distance between 
             predicted and obsereved points  */
@@ -171,6 +175,45 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
    */
 
+    /* First Step: Transform car sensor landmark observation from the car co-ordinate system to map
+    co-ordinate system for every particle */    
+    
+    double x_p{}, y_p{}, sin_theta{}, cos_theta{};
+    std::vector<LandmarkObs> transformed_cordinates(observations.size());
+ 
+    // for every particle
+    for (auto& particle : particles_) {
+
+        double x_c{}, y_c{};       
+
+        //particle co-ordinate xp and yp
+        x_p = particle.x;
+        y_p = particle.y;
+
+        //cos theta and sin theta of every particle
+        sin_theta = sin(particle.theta);
+        cos_theta = cos(particle.theta);
+
+        std::transform(observations.begin(), observations.end(), transformed_cordinates.begin(),
+            [&](LandmarkObs& obs_meas) {
+                // observation co-ordinate xc and yc
+                x_c = obs_meas.x;
+                y_c = obs_meas.y;
+
+                LandmarkObs& trans_cord{};
+
+                trans_cord.x = x_p + cos_theta * x_c - sin_theta * y_c;
+                trans_cord.y = y_p + sin_theta * x_c + cos_theta * y_c;
+                trans_cord.id = -1;  // we do not know with which landmark to associate this observation yet
+
+                transformed_cordinates.push_back(trans_cord);
+            });
+    }
+
+    /*Second Step: Associating these transformed observtions with the nearest landmark on the map */
+    dataAssociation(observations, transformed_cordinates);
+
+    /*Third Step: Updating particle weight */
 }
 
 void ParticleFilter::resample() {
