@@ -92,9 +92,9 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
 
     /* create a noise (Gaussian noise) distribution for x, y and theta
     around mean 0 and standard deviation std_x, std_y and std_theta */
-    std::normal_distribution<double> dist_x(0, std_pos[0]);
-    std::normal_distribution<double> dist_y(0, std_pos[1]);
-    std::normal_distribution<double> dist_theta(0, std_pos[2]);
+    std::normal_distribution<double> dist_x(0, std_x);
+    std::normal_distribution<double> dist_y(0, std_y);
+    std::normal_distribution<double> dist_theta(0, std_theta);
 
     /* Every particle is moved at certain distance at a certain heading after delta t */
     for_each (particles_.begin(), particles_.end(), [&](Particle particle)
@@ -201,7 +201,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /* Store the transformed co-ordinates */
-        std::transform(observations.begin(), observations.end(), transformed_cordinates.begin(),
+        #if 0        std::transform(observations.begin(), observations.end(), transformed_cordinates.begin(),
             [&](LandmarkObs obs_meas) {
                 /* Get the x and y co-ordinates of the observed measurements */
                 x_c = obs_meas.x;
@@ -218,6 +218,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 /* Update the vector */
                 transformed_cordinates.push_back(trans_cord);
             });
+#endif
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /* Second Step: Associating these transformed observtions with the nearest landmark on the map */        
@@ -253,17 +254,16 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         for (int i = 0; i < transformed_cordinates.size(); i++) {
             for (int j = 0; i < global_cordinates.size(); i++) {
                 if (transformed_cordinates[i].id == global_cordinates[j].id) {
-                    double x_i = transformed_cordinates[i].id;
-                    double mu_i = global_cordinates[i].id;
-
                     auto diff_x = transformed_cordinates[i].x - global_cordinates[i].x;
                     auto diff_y = transformed_cordinates[i].y - global_cordinates[i].y;
 
-                    particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;
+                    particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;                    
                 }
             }
-        }        
-    }   
+        } 
+
+        weights_.push_back(particle.weight);
+    }    
 }
 
 void ParticleFilter::resample() {
@@ -274,6 +274,21 @@ void ParticleFilter::resample() {
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
 
+    /* Create a vector of new particles */
+    std::vector<Particle> new_particles(num_particles_);
+    /* Random number engine class that generates pseudo random numbers */
+    std::default_random_engine gen;
+    /*std::discrete_distribution produces random integers on the interval [0, n), where the probability 
+    of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
+    std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
+    
+    /* Create new particles with probability proportional to their weight */
+    for (auto i = 0; i < particles_.size(); i++) {
+        new_particles[i] = particles_[distr_index(gen)];
+    }
+
+    /* Copy it to the original particle vector */
+    particles_ = std::move(new_particles);
 }
 
 void ParticleFilter::SetAssociations(Particle& particle, 
