@@ -189,7 +189,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     /* Loop through every particle */
     for (auto& particle : particles_) {
         /* Initialize the observed measurements for every particle */
-        const double x_c{}, y_c{};       
+        double x_c{}, y_c{};       
 
         /* Get the x and y co-ordinates of the particle */
         x_p = particle.x;
