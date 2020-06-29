@@ -177,43 +177,93 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
     /* First Step: Transform car sensor landmark observation from the car co-ordinate system to map
     co-ordinate system for every particle */    
-    
+    /* Initialize particle x, y co-ordinates, and its sine and cos theta */
     double x_p{}, y_p{}, sin_theta{}, cos_theta{};
+    /* Define distance between particle and the map landmark */
+    double distance{};
+    /* Initialize vector to store the transormed co-ordinates */
     std::vector<LandmarkObs> transformed_cordinates(observations.size());
+    /* Initialize vector to store the global co-ordinates */
+    std::vector<LandmarkObs> global_cordinates(observations.size());
  
-    // for every particle
+    /* Loop through every particle */
     for (auto& particle : particles_) {
-
+        /* Initialize the observed measurements for every particle */
         double x_c{}, y_c{};       
 
-        //particle co-ordinate xp and yp
+        /* Get the x and y co-ordinates of the particle */
         x_p = particle.x;
         y_p = particle.y;
 
-        //cos theta and sin theta of every particle
+        /* Get the sine and cos of the particle */
         sin_theta = sin(particle.theta);
         cos_theta = cos(particle.theta);
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /* Store the transformed co-ordinates */
         std::transform(observations.begin(), observations.end(), transformed_cordinates.begin(),
             [&](LandmarkObs& obs_meas) {
-                // observation co-ordinate xc and yc
+                /* Get the x and y co-ordinates of the observed measurements */
                 x_c = obs_meas.x;
                 y_c = obs_meas.y;
 
+                /* Intialize the object of the structure LandmarkObs to store values */
                 LandmarkObs& trans_cord{};
 
+                /* Update the structure */
                 trans_cord.x = x_p + cos_theta * x_c - sin_theta * y_c;
                 trans_cord.y = y_p + sin_theta * x_c + cos_theta * y_c;
-                trans_cord.id = -1;  // we do not know with which landmark to associate this observation yet
+                trans_cord.id = -1;  
 
+                /* Update the vector */
                 transformed_cordinates.push_back(trans_cord);
             });
-    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /*Second Step: Associating these transformed observtions with the nearest landmark on the map */
-    dataAssociation(observations, transformed_cordinates);
+        /* Second Step: Associating these transformed observtions with the nearest landmark on the map */        
+        for (const auto& glob_cord : map_landmarks.landmark_list) {
+            /* Define structure for landmark */
+            LandmarkObs& map{};
 
-    /*Third Step: Updating particle weight */
+            /* Check whether the distance between the particle and the map landmark is within the sensor range */
+            distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);
+
+            /* Update landmark structure if distance is within the sensor range */
+            if (distance < sensor_range) {
+                map.x = glob_cord.x_f;
+                map.y = glob_cord.y_f;
+                map.id = glob_cord.id_i;
+
+                /* Update the global co-ordinate structure */
+                global_cordinates.push_back(map);
+            }
+        }
+        
+        /* Associate these transformed observtions with the nearest landmark on the map */
+        /* Here global_cordinates is the prediction and the transformed cordinate is the observation */
+        dataAssociation(global_cordinates, transformed_cordinates);
+
+        /* Third Step: Update particle weight */
+        /* The transformed cordinates id gets matched with global cordinates id */
+          // set static values for multi-variate Gaussian
+        auto cov_x = std_landmark[0] * std_landmark[0];
+        auto cov_y = std_landmark[1] * std_landmark[1];
+        auto normalizer = 2.0 * M_PI * std_landmark[0] * std_landmark[1];
+
+        for (int i = 0; i < transformed_cordinates.size(); i++) {
+            for (int j = 0; i < global_cordinates.size(); i++) {
+                if (transformed_cordinates[i].id == global_cordinates[j].id) {
+                    double x_i = transformed_cordinates[i].id;
+                    double mu_i = global_cordinates[i].id;
+
+                    auto diff_x = transformed_cordinates[i].x - global_cordinates[i].x;
+                    auto diff_y = transformed_cordinates[i].y - global_cordinates[i].y;
+
+                    particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;
+                }
+            }
+        }        
+    }   
 }
 
 void ParticleFilter::resample() {
