@@ -201,8 +201,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /* Store the transformed co-ordinates */
-        std::transform(observations.begin(), observations.end(), transformed_cordinates.begin(),
-            [&](LandmarkObs& obs_meas) {
+        std::transform(observations.begin(), observations.end(), std::back_inserter(transformed_cordinates),
+            [&](LandmarkObs obs_meas) {
                 /* Get the x and y co-ordinates of the observed measurements */
                 x_c = obs_meas.x;
                 y_c = obs_meas.y;
