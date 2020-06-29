@@ -201,8 +201,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /* Store the transformed co-ordinates */
-        #if 0        std::transform(observations.begin(), observations.end(), transformed_cordinates.begin(),
-            [&](LandmarkObs obs_meas) {
+        std::transform(observations.begin(), observations.end(), transformed_cordinates.begin(),
+            [&](LandmarkObs& obs_meas) {
                 /* Get the x and y co-ordinates of the observed measurements */
                 x_c = obs_meas.x;
                 y_c = obs_meas.y;
@@ -218,7 +218,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 /* Update the vector */
                 transformed_cordinates.push_back(trans_cord);
             });
-#endif
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /* Second Step: Associating these transformed observtions with the nearest landmark on the map */        
