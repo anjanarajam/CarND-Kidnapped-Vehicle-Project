@@ -217,6 +217,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
                 /* Update the vector */
                 transformed_cordinates.push_back(trans_cord);
+
+                return transformed_cordinates;
             });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
