@@ -133,7 +133,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
     /*For all the observated landmarks or the map landmarks */
     for (auto& obs_meas : observations) {
 
-        /* Take minimum diatance as the maximum for the initial comparison*/
+        /* Take minimum distance as the maximum for the initial comparison*/
         minimum_distance = std::numeric_limits<double>::max();
 
         /* Set initial nearest particle id to -1 to ensure that the predicted measurement was 
@@ -176,7 +176,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    */
 
     /* First Step: Transform car sensor landmark observation from the car co-ordinate system to map
-    co-ordinate system for every particle */    
+    co-ordinate system for every particle */  
+
     /* Initialize particle x, y co-ordinates, and its sine and cos theta */
     double x_p{}, y_p{}, sin_theta{}, cos_theta{};
     /* Define distance between particle and the map landmark */
@@ -214,9 +215,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 trans_cord.x = x_p + cos_theta * x_c - sin_theta * y_c;
                 trans_cord.y = y_p + sin_theta * x_c + cos_theta * y_c;
                 trans_cord.id = -1;  
-
-                /* Update the vector */
-                //transformed_cordinates.push_back(trans_cord);
 
                 return trans_cord;
             });
@@ -256,8 +254,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         for (int i = 0; i < transformed_cordinates.size(); i++) {
             for (int j = 0; i < global_cordinates.size(); i++) {
                 if (transformed_cordinates[i].id == global_cordinates[j].id) {
-                    auto diff_x = transformed_cordinates[i].x - global_cordinates[i].x;
-                    auto diff_y = transformed_cordinates[i].y - global_cordinates[i].y;
+                    auto diff_x = transformed_cordinates[i].x - global_cordinates[j].x;
+                    auto diff_y = transformed_cordinates[i].y - global_cordinates[j].y;
 
                     particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;                    
                 }
