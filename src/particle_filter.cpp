@@ -69,6 +69,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
           obj_part.theta = dist_theta(gen) + noise_theta(gen);
           obj_part.weight = 1.0;
           particles_.push_back(obj_part);
+          weights_.push_back(1.0);
       }
       
       /* Initialize to true after initializing the particles */
