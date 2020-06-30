@@ -103,8 +103,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     std::normal_distribution<double> dist_y(0, std_y);
     std::normal_distribution<double> dist_theta(0, std_theta);
 
-    std::cout << particles_.size() << std::endl;
-
     /* Every particle is moved at certain distance at a certain heading after delta t */
     for_each (particles_.begin(), particles_.end(), [&](Particle particle)
         {
@@ -140,9 +138,6 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
     double nearest_neighbour{}, minimum_distance{};
     int landmark_id{};
     
-    std::cout << observations.size() << std::endl;
-    std::cout << predicted.size() << std::endl;
-
     /*For all the observated landmarks or the map landmarks */
     for (auto& obs_meas : observations) {
         
@@ -222,8 +217,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         sin_theta = sin(particle.theta);
         cos_theta = cos(particle.theta);
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /* Store the transformed co-ordinates */
         std::transform(observations.begin(), observations.end(), std::back_inserter(transformed_cordinates),
@@ -263,8 +256,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 global_cordinates.push_back(map);
             }
         }
-
-
         
         /* Associate these transformed observtions with the nearest landmark on the map */
         /* Here global_cordinates is the prediction and the transformed cordinate is the observation */
