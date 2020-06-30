@@ -194,22 +194,25 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     double x_p{}, y_p{}, sin_theta{}, cos_theta{};
     /* Define distance between particle and the map landmark */
     double distance{};
-    /* Initialize vector to store the transormed co-ordinates */
-    std::vector<LandmarkObs> transformed_cordinates(observations.size());
-    /* Initialize vector to store the global co-ordinates */
-    std::vector<LandmarkObs> global_cordinates;
 
     std::cout << particles_.size() << std::endl;
-    std::cout << transformed_cordinates.size() << std::endl;
     std::cout << observations.size() << std::endl;
     std::cout << map_landmarks.landmark_list.size() << std::endl;
 
-    int i = 0;
+
 
     /* Loop through every particle */
-    for (auto& particle : particles_) {        
+    for (auto& particle : particles_) { 
+        /* Initialize vector to store the transormed co-ordinates */
+        std::vector<LandmarkObs> transformed_cordinates{};
+        /* Initialize vector to store the global co-ordinates */
+        std::vector<LandmarkObs> global_cordinates{};
         /* Initialize the observed measurements for every particle */
-        double x_c{}, y_c{};       
+        double x_c{}, y_c{};  
+
+        int i = 0;
+
+        transformed_cordinates.reserve(observations.size());
 
         /* Get the x and y co-ordinates of the particle */
         x_p = particle.x;
@@ -286,9 +289,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         } 
 
         weights_.push_back(particle.weight);
+        std::cout << global_cordinates.size() << std::endl;
     }    
-
-    std::cout << global_cordinates.size() << std::endl;
 }
 
 void ParticleFilter::resample() {
