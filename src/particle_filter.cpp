@@ -197,7 +197,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
     //std::cout << particles_.size() << std::endl;
     //std::cout << observations.size() << std::endl;
-    //std::cout << map_landmarks.landmark_list.size() << std::endl;
+    std::cout << "map_landmarks.landmark_list" << map_landmarks.landmark_list.size() << std::endl;
 
     /* Loop through every particle */
     for (auto& particle : particles_) { 
@@ -239,13 +239,13 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        int i = 0;
-        std::cout << "global_cordinates.size() before" << global_cordinates.size() << std::endl;
+        int i = 0, j = 0;
+        //std::cout << "global_cordinates.size() before" << global_cordinates.size() << std::endl;
         /* Second Step: Associating these transformed observtions with the nearest landmark on the map */        
         for (const auto& glob_cord : map_landmarks.landmark_list) {
             /* Define structure for landmark */
             LandmarkObs map{};
-
+            j++;
             /* Check whether the distance between the particle and the map landmark is within the sensor range */
             distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);           
 
@@ -260,8 +260,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 global_cordinates.push_back(map);
             }
         }        
-        std::cout << "count"<< i << std::endl;
-        std::cout << "global_cordinates.size()" << global_cordinates.size() << std::endl;
+        std::cout << "count"<< i << "and" << j << std::endl;
+        //std::cout << "global_cordinates.size()" << global_cordinates.size() << std::endl;
 
         /* Associate these transformed observtions with the nearest landmark on the map */
         /* Here global_cordinates is the prediction and the transformed cordinate is the observation */
