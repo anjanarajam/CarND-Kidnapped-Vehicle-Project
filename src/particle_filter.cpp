@@ -280,9 +280,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         } 
 
         weights_.push_back(particle.weight);  
-        std::cout << "check" << std::endl;
     }   
-    std::cout << "check2" << std::endl;
 }
 
 void ParticleFilter::resample() {
@@ -292,7 +290,7 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
-
+    std::cout << "check1" << std::endl;
     /* Create a vector of new particles */
     std::vector<Particle> new_particles(num_particles_);
     /* Random number engine class that generates pseudo random numbers */
@@ -305,7 +303,7 @@ void ParticleFilter::resample() {
     for (auto i = 0; i < particles_.size(); i++) {
         new_particles[i] = particles_[distr_index(gen)];
     }
-    std::cout << "check1" << std::endl;
+    std::cout << "check2" << std::endl;
     /* Copy it to the original particle vector */
     particles_ = std::move(new_particles);
 }
