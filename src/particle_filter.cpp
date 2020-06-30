@@ -136,6 +136,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
 
     /* Define variables for finding nearest neighbour assigning nearest distance */
     double nearest_neighbour{}, minimum_distance{};
+    int landmark_id{};
 
     /*For all the observated landmarks or the map landmarks */
     for (auto& obs_meas : observations) {
@@ -157,11 +158,14 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
             predicted and obsereved landmark */
             if (nearest_neighbour < minimum_distance) {
                 minimum_distance = nearest_neighbour;
-                /* Assign that measured landmark id to the observed id who is the
-                nearest neighbour */
-                obs_meas.id = pred_meas.id;
+                /* Assign predicted measurement id to a variable*/
+                landmark_id = pred_meas.id;
             }
         }
+
+        /* Assign that measured landmark id to the observed id who is the
+        nearest neighbour */
+        obs_meas.id = landmark_id;
     }
 }
 
@@ -192,7 +196,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     /* Initialize vector to store the transormed co-ordinates */
     std::vector<LandmarkObs> transformed_cordinates(observations.size());
     /* Initialize vector to store the global co-ordinates */
-    std::vector<LandmarkObs> global_cordinates(observations.size());
+    std::vector<LandmarkObs> global_cordinates;
  
     /* Loop through every particle */
     for (auto& particle : particles_) {
