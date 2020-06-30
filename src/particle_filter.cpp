@@ -71,6 +71,8 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
           particles_.push_back(obj_part);
           weights_.push_back(1.0);
       }
+
+      std::cout << weights_.size() << std::endl;
       
       /* Initialize to true after initializing the particles */
       is_initialized_ = true;
