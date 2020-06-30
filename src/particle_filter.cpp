@@ -46,7 +46,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   std::normal_distribution<double> noise_theta(0, std_theta);
   
   /* If not initialized */
-  //while (!(initialized())) {
+  while (!(initialized())) {
       /* Get standard deviation values for x, y and theta */
       std_x = std[0];
       std_y = std[1];
@@ -74,7 +74,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
       
       /* Initialize to true after initializing the particles */
       is_initialized_ = true;
-  //}
+  }
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[],
@@ -195,11 +195,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     /* Define distance between particle and the map landmark */
     double distance{};
 
-    std::cout << particles_.size() << std::endl;
-    std::cout << observations.size() << std::endl;
-    std::cout << map_landmarks.landmark_list.size() << std::endl;
-
-
+    //std::cout << particles_.size() << std::endl;
+    //std::cout << observations.size() << std::endl;
+    //std::cout << map_landmarks.landmark_list.size() << std::endl;
 
     /* Loop through every particle */
     for (auto& particle : particles_) { 
@@ -210,8 +208,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         /* Initialize the observed measurements for every particle */
         double x_c{}, y_c{};  
 
-        int i = 0;
-
+        /* Set the size for the transformed co-ordinates */
         transformed_cordinates.reserve(observations.size());
 
         /* Get the x and y co-ordinates of the particle */
@@ -251,9 +248,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             /* Check whether the distance between the particle and the map landmark is within the sensor range */
             distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);
 
-            //std::cout << map_landmarks.landmark_list.size() << std::endl;
-            std::cout << i++ << std::endl;
-
             /* Update landmark structure if distance is within the sensor range */
             if (distance < sensor_range) {
                 //std::cout << i++ << std::endl;
@@ -270,13 +264,14 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         /* Here global_cordinates is the prediction and the transformed cordinate is the observation */
         dataAssociation(global_cordinates, transformed_cordinates);
 
-        /* Third Step: Update particle weight */
-        /* The transformed cordinates id gets matched with global cordinates id */
-          // set static values for multi-variate Gaussian
+        /* Third Step: Update particle weight */        
+
+        /* Set values for multi-variate Gaussian distribution */
         auto cov_x = std_landmark[0] * std_landmark[0];
         auto cov_y = std_landmark[1] * std_landmark[1];
         auto normalizer = 2.0 * M_PI * std_landmark[0] * std_landmark[1];
 
+        /* Check if the transformed cordinates id gets matched with global cordinates id */
         for (int i = 0; i < transformed_cordinates.size(); i++) {
             for (int j = 0; i < global_cordinates.size(); i++) {
                 if (transformed_cordinates[i].id == global_cordinates[j].id) {
@@ -289,7 +284,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         } 
 
         weights_.push_back(particle.weight);
-        std::cout << global_cordinates.size() << std::endl;
+        std::cout << "global_cordinates.size()" << global_cordinates.size() << std::endl;
     }    
 }
 
@@ -308,8 +303,6 @@ void ParticleFilter::resample() {
     /*std::discrete_distribution produces random integers on the interval [0, n), where the probability 
     of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
-
-    std::cout << particles_.size() << std::endl;
     
     /* Create new particles with probability proportional to their weight */
     for (auto i = 0; i < particles_.size(); i++) {
