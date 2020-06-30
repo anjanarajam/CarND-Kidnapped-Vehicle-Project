@@ -290,7 +290,6 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
-    std::cout << "check1" << std::endl;
     /* Create a vector of new particles */
     std::vector<Particle> new_particles(num_particles_);
     /* Random number engine class that generates pseudo random numbers */
@@ -299,6 +298,10 @@ void ParticleFilter::resample() {
     of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
     
+    std::cout << weights_.size() << std::endl;
+
+    std::cout << weights_[20] << std::endl;
+
     /* Create new particles with probability proportional to their weight */
     for (auto i = 0; i < particles_.size(); i++) {
         new_particles[i] = particles_[distr_index(gen)];
