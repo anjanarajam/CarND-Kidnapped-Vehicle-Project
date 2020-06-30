@@ -279,11 +279,14 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                     particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;                    
                 }
             }
-        } 
+        }         
+    } 
 
-        weights_.push_back(particle.weight);  
-    }   
-}
+    /* Update the weights vector */
+    for (int idx; idx < weights_.size(); idx++) {
+        weights_[idx] = particles_[idx].weight;
+    }
+ }
 
 void ParticleFilter::resample() {
   /**
@@ -301,9 +304,6 @@ void ParticleFilter::resample() {
     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
     
     double count = 0;
-    std::cout << weights_.size() << std::endl;
-    
-    std::cout << weights_[20] << std::endl;
 
     /* Create new particles with probability proportional to their weight */
     for (auto i = 0; i < particles_.size(); i++) {
