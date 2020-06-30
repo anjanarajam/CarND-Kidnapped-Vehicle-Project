@@ -279,7 +279,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             }
         } 
 
-        weights_.push_back(particle.weight);        
+        weights_.push_back(particle.weight);  
+        std::cout << "check" << std::endl;
     }    
 }
 
@@ -303,7 +304,7 @@ void ParticleFilter::resample() {
     for (auto i = 0; i < particles_.size(); i++) {
         new_particles[i] = particles_[distr_index(gen)];
     }
-
+    std::cout << "check1" << std::endl;
     /* Copy it to the original particle vector */
     particles_ = std::move(new_particles);
 }
