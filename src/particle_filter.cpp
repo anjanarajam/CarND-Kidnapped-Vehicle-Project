@@ -46,7 +46,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   std::normal_distribution<double> noise_theta(0, std_theta);
   
   /* If not initialized */
-  while (!(initialized())) {
+  //while (!(initialized())) {
       /* Get standard deviation values for x, y and theta */
       std_x = std[0];
       std_y = std[1];
@@ -74,7 +74,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
       
       /* Initialize to true after initializing the particles */
       is_initialized_ = true;
-  }
+  //}
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[],
