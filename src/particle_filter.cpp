@@ -273,7 +273,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             }
         } 
 
+        std::cout << particle.weight << std::endl;
+
         weights_.push_back(particle.weight);
+
     }    
 }
 
