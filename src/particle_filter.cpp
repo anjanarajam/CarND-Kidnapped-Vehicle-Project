@@ -139,10 +139,13 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
     /* Define variables for finding nearest neighbour assigning nearest distance */
     double nearest_neighbour{}, minimum_distance{};
     int landmark_id{};
+    
+    std::cout << observations.size() << std::endl;
+    std::cout << predicted.size() << std::endl;
 
     /*For all the observated landmarks or the map landmarks */
     for (auto& obs_meas : observations) {
-        std::cout << observations.size() << std::endl;
+        
         /* Take minimum distance as the maximum for the initial comparison*/
         minimum_distance = std::numeric_limits<double>::max();
 
@@ -152,7 +155,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
 
         /*For all the predicted landmarks or the measured landmarks using sensors */
         for (const auto& pred_meas : predicted) {
-            std::cout << predicted.size() << std::endl;
+            
             /*the nearest neighbour is calculated by finding eucledian distance between 
             predicted and obsereved points  */
             nearest_neighbour = dist(pred_meas.x, pred_meas.y, obs_meas.x, obs_meas.y);
@@ -202,6 +205,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     std::vector<LandmarkObs> global_cordinates;
 
     std::cout << particles_.size() << std::endl;
+    std::cout << transformed_cordinates.size() << std::endl;
+    std::cout << observations.size() << std::endl;
  
     /* Loop through every particle */
     for (auto& particle : particles_) {
@@ -217,8 +222,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         sin_theta = sin(particle.theta);
         cos_theta = cos(particle.theta);
 
-        std::cout << transformed_cordinates.size() << std::endl;
-        std::cout << observations.size() << std::endl;
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /* Store the transformed co-ordinates */
@@ -260,7 +264,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             }
         }
 
-        std::cout << global_cordinates.size() << std::endl;
+
         
         /* Associate these transformed observtions with the nearest landmark on the map */
         /* Here global_cordinates is the prediction and the transformed cordinate is the observation */
@@ -286,6 +290,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
         weights_.push_back(particle.weight);
     }    
+
+    std::cout << global_cordinates.size() << std::endl;
 }
 
 void ParticleFilter::resample() {
