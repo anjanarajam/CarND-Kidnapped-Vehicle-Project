@@ -239,7 +239,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        int i = 0;
         /* Second Step: Associating these transformed observtions with the nearest landmark on the map */        
         for (const auto& glob_cord : map_landmarks.landmark_list) {
             /* Define structure for landmark */
@@ -247,10 +247,11 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
             /* Check whether the distance between the particle and the map landmark is within the sensor range */
             distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);
+            std::cout << "global_cordinates.size() before" << global_cordinates.size() << std::endl;
 
             /* Update landmark structure if distance is within the sensor range */
-            if (distance < sensor_range) {
-                //std::cout << i++ << std::endl;
+            if (distance < sensor_range) {   
+                i++;
                 map.x = glob_cord.x_f;
                 map.y = glob_cord.y_f;
                 map.id = glob_cord.id_i;
@@ -258,8 +259,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 /* Update the global co-ordinate structure */
                 global_cordinates.push_back(map);
             }
-        }
-        
+        }        
+        std::cout << "count"<< i << std::endl;
+        std::cout << "global_cordinates.size()" << global_cordinates.size() << std::endl;
+
         /* Associate these transformed observtions with the nearest landmark on the map */
         /* Here global_cordinates is the prediction and the transformed cordinate is the observation */
         dataAssociation(global_cordinates, transformed_cordinates);
@@ -283,8 +286,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             }
         } 
 
-        weights_.push_back(particle.weight);
-        std::cout << "global_cordinates.size()" << global_cordinates.size() << std::endl;
+        weights_.push_back(particle.weight);        
     }    
 }
 
