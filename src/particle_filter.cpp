@@ -30,14 +30,20 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-   // TODO: Set the number of particles
+   /* Set the number of particles */
   num_particles_ = 256;  
-  /*Random number engine class that generates pseudo random numbers*/
+  /* Random number engine class that generates pseudo random numbers*/
   std::default_random_engine gen;
   /* Standard deviation values for x, y and theta*/
   double std_x{}, std_y{}, std_theta{};
   /* Create an object for the particle */
   Particle obj_part;
+
+  /* create a noise (Gaussian noise) distribution for x, y and theta
+  around mean 0 and standard deviation std_x, std_y and std_theta */
+  std::normal_distribution<double> noise_x(0, std_x);
+  std::normal_distribution<double> noise_y(0, std_y);
+  std::normal_distribution<double> noise_theta(0, std_theta);
   
   /* If not initialized */
   while (!(initialized())) {
@@ -53,14 +59,14 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
       std::normal_distribution<double> dist_theta(theta, std_theta);
 
       /* Allocate memory to the vector */
-      particles_.reserve(256);
+      particles_.reserve(num_particles_);
 
       /* Get the values for the Particle structure */
       for (int i = 0; i < num_particles_; i++) {
           obj_part.id = i;
-          obj_part.x = dist_x(gen);
-          obj_part.y = dist_y(gen);
-          obj_part.theta = dist_theta(gen);
+          obj_part.x = dist_x(gen) + noise_x(gen);
+          obj_part.y = dist_y(gen) + noise_y(gen);
+          obj_part.theta = dist_theta(gen) + noise_theta(gen);
           obj_part.weight = 1.0;
           particles_.push_back(obj_part);
       }
@@ -90,7 +96,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     std_y = std_pos[1];
     std_theta = std_pos[2];
 
-    /* create a noise (Gaussian noise) distribution for x, y and theta
+    /* Create a noise (Gaussian noise) distribution for x, y and theta
     around mean 0 and standard deviation std_x, std_y and std_theta */
     std::normal_distribution<double> dist_x(0, std_x);
     std::normal_distribution<double> dist_y(0, std_y);
@@ -99,9 +105,9 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     /* Every particle is moved at certain distance at a certain heading after delta t */
     for_each (particles_.begin(), particles_.end(), [&](Particle particle)
         {
-            if (yaw_rate < 0.001) {
-                particle.x += velocity * delta_t * sin(particle.theta);
-                particle.y += velocity * delta_t * cos(particle.theta);
+            if (fabs(yaw_rate) < 0.001) {
+                particle.x += velocity * delta_t * cos(particle.theta);
+                particle.y += velocity * delta_t * sin(particle.theta);
             }
             else {
                 particle.x += velocity / yaw_rate * (sin(particle.theta + yaw_rate * delta_t) - sin(particle.theta));
