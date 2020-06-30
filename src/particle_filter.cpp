@@ -248,7 +248,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             /* Check whether the distance between the particle and the map landmark is within the sensor range */
             distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);
 
-            std::cout << map_landmarks.landmark_list.size() << std::endl;
+            //std::cout << map_landmarks.landmark_list.size() << std::endl;
+            std::cout << i++ << std::endl;
 
             /* Update landmark structure if distance is within the sensor range */
             if (distance < sensor_range) {
