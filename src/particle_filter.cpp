@@ -281,7 +281,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
         weights_.push_back(particle.weight);  
         std::cout << "check" << std::endl;
-    }    
+    }   
+    std::cout << "check2" << std::endl;
 }
 
 void ParticleFilter::resample() {
