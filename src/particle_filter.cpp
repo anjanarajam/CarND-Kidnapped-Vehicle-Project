@@ -138,6 +138,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
 
     /* Define variables for finding nearest neighbour assigning nearest distance */
     double nearest_neighbour{}, minimum_distance{};
+    /* Variable to define landmark id */
     int landmark_id{};
     
     /*For all the observated landmarks or the map landmarks */
@@ -283,7 +284,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     } 
 
     /* Update the weights vector */
-    for (int idx; idx < weights_.size(); idx++) {
+    for (int idx = 0; idx < weights_.size(); idx++) {
         weights_[idx] = particles_[idx].weight;
     }
  }
@@ -307,7 +308,7 @@ void ParticleFilter::resample() {
     for (auto i = 0; i < particles_.size(); i++) {
         new_particles[i] = particles_[distr_index(gen)];
     }
-    std::cout << "check2" << std::endl;
+
     /* Copy it to the original particle vector */
     particles_ = std::move(new_particles);
 }
