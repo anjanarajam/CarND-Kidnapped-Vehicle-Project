@@ -31,7 +31,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    *   (and others in this file).
    */
    /* Set the number of particles */
-  num_particles_ = 30;  
+  num_particles_ = 30  ;  
   /* Random number engine class that generates pseudo random numbers*/
   std::default_random_engine gen;
   /* Standard deviation values for x, y and theta*/
@@ -272,7 +272,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
         /* Check if the transformed cordinates id gets matched with global cordinates id */
         for (int i = 0; i < transformed_cordinates.size(); i++) {
-            for (int j = 0; i < global_cordinates.size(); i++) {
+            for (int j = 0; j < global_cordinates.size(); j++) {
                 if (transformed_cordinates[i].id == global_cordinates[j].id) {
                     auto diff_x = transformed_cordinates[i].x - global_cordinates[j].x;
                     auto diff_y = transformed_cordinates[i].y - global_cordinates[j].y;
