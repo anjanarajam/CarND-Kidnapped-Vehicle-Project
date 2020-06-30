@@ -195,10 +195,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     /* Define distance between particle and the map landmark */
     double distance{};
 
-    //std::cout << particles_.size() << std::endl;
-    //std::cout << observations.size() << std::endl;
-    std::cout << "map_landmarks.landmark_list" << map_landmarks.landmark_list.size() << std::endl;
-
     /* Loop through every particle */
     for (auto& particle : particles_) { 
         /* Initialize vector to store the transormed co-ordinates */
@@ -239,19 +235,18 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        int i = 0, j = 0;
-        //std::cout << "global_cordinates.size() before" << global_cordinates.size() << std::endl;
+
         /* Second Step: Associating these transformed observtions with the nearest landmark on the map */        
         for (const auto& glob_cord : map_landmarks.landmark_list) {
             /* Define structure for landmark */
             LandmarkObs map{};
-            j++;
+
             /* Check whether the distance between the particle and the map landmark is within the sensor range */
             distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);           
 
             /* Update landmark structure if distance is within the sensor range */
             if (distance < sensor_range) {   
-                i++;
+
                 map.x = glob_cord.x_f;
                 map.y = glob_cord.y_f;
                 map.id = glob_cord.id_i;
@@ -260,8 +255,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 global_cordinates.push_back(map);
             }
         }        
-        std::cout << "count"<< i << "and" << j << std::endl;
-        //std::cout << "global_cordinates.size()" << global_cordinates.size() << std::endl;
 
         /* Associate these transformed observtions with the nearest landmark on the map */
         /* Here global_cordinates is the prediction and the transformed cordinate is the observation */
