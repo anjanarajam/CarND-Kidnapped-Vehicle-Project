@@ -204,7 +204,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     std::cout << observations.size() << std::endl;
     std::cout << map_landmarks.landmark_list.size() << std::endl;
 
- 
+    int i = 0;
+
     /* Loop through every particle */
     for (auto& particle : particles_) {
         
@@ -250,6 +251,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
             /* Update landmark structure if distance is within the sensor range */
             if (distance < sensor_range) {
+                std::cout << i++ << std::endl;
                 map.x = glob_cord.x_f;
                 map.y = glob_cord.y_f;
                 map.id = glob_cord.id_i;
