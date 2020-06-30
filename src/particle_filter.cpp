@@ -202,6 +202,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     std::cout << particles_.size() << std::endl;
     std::cout << transformed_cordinates.size() << std::endl;
     std::cout << observations.size() << std::endl;
+    std::cout << map_landmarks.landmark_list.size() << std::endl;
+
  
     /* Loop through every particle */
     for (auto& particle : particles_) {
