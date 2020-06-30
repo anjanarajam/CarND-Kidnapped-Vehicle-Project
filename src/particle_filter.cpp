@@ -200,10 +200,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     std::vector<LandmarkObs> transformed_cordinates(observations.size());
     /* Initialize vector to store the global co-ordinates */
     std::vector<LandmarkObs> global_cordinates;
+
+    std::cout << particles_.size() << std::endl;
  
     /* Loop through every particle */
     for (auto& particle : particles_) {
-        std::cout << particles_.size() << std::endl;
+        
         /* Initialize the observed measurements for every particle */
         double x_c{}, y_c{};       
 
