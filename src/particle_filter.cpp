@@ -171,6 +171,9 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
         /* Assign that measured landmark id to the observed id who is the
         nearest neighbour */
         obs_meas.id = landmark_id;
+        std::cout << "obs_meas.id: " << landmark_id << std::endl;
+
+
     }
 }
 
@@ -281,7 +284,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                     auto diff_x = transformed_cordinates[i].x - global_cordinates[j].x;
                     auto diff_y = transformed_cordinates[i].y - global_cordinates[j].y;
 
-                    std::cout << particle.weight << std::endl;
+                    std::cout << "weight: " << particle.weight << std::endl;
                     std::cout << diff_x << " " << diff_y << " " << " " << cov_x << " " << cov_y << " " << normalizer << std::endl;
                     particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;                    
                 }
