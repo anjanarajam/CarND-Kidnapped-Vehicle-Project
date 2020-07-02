@@ -289,6 +289,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     /* Update the weights vector */
     for (int idx = 0; idx < weights_.size(); idx++) {
         weights_[idx] = particles_[idx].weight;
+        std::cout << weights_[idx] << std::endl;
     }
  }
 
