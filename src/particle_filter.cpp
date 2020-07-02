@@ -111,7 +111,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
         {
             particle.weight = 1;
 
-            std::cout << particle.weight << std::endl;
             if (fabs(yaw_rate) < 0.001) {
                 particle.x += velocity * delta_t * cos(particle.theta);
                 particle.y += velocity * delta_t * sin(particle.theta);
@@ -282,6 +281,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                     auto diff_x = transformed_cordinates[i].x - global_cordinates[j].x;
                     auto diff_y = transformed_cordinates[i].y - global_cordinates[j].y;
 
+                    std::cout << particle.weight << std::endl;
+                    std::cout << diff_x << diff_y << cov_x << cov_y << normalizer << std::endl;
                     particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;                    
                 }
             }
