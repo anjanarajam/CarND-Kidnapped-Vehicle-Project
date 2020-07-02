@@ -141,7 +141,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
     /* Variable to define landmark id */
     int landmark_id{};
     
-    /*For all the observated landmarks or the map landmarks */
+    /*For all the observated landmarks or the sensor measurements */
     for (auto& obs_meas : observations) {
         
         /* Take minimum distance as the maximum for the initial comparison*/
@@ -151,13 +151,13 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
         mapped to the observed one */
         obs_meas.id = -1;
 
-        /*For all the predicted landmarks or the measured landmarks using sensors */
+        /*For all the predicted landmarks or the map landmarks */
         for (const auto& pred_meas : predicted) {
             
             /*the nearest neighbour is calculated by finding eucledian distance between 
             predicted and obsereved points  */
             nearest_neighbour = dist(pred_meas.x, pred_meas.y, obs_meas.x, obs_meas.y);
-
+             
             /* Find the nearest neighbour by finding the minimum distance between 
             predicted and obsereved landmark */
             if (nearest_neighbour < minimum_distance) {
@@ -205,7 +205,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         /* Initialize vector to store the global co-ordinates */
         std::vector<LandmarkObs> global_cordinates{};
         /* Initialize the observed measurements for every particle */
-        double x_c{}, y_c{};  
+        double x_c{}, y_c{}, obs_id;  
 
         /* Set the size for the transformed co-ordinates */
         transformed_cordinates.reserve(observations.size());
@@ -227,6 +227,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 /* Get the x and y co-ordinates of the observed measurements */
                 x_c = obs_meas.x;
                 y_c = obs_meas.y;
+                obs_id = obs_meas.id;
 
                 /* Intialize the object of the structure LandmarkObs to store values */
                 LandmarkObs trans_cord{};
@@ -234,7 +235,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 /* Update the structure */
                 trans_cord.x = x_p + cos_theta * x_c - sin_theta * y_c;
                 trans_cord.y = y_p + sin_theta * x_c + cos_theta * y_c;
-                trans_cord.id = -1;  
+                trans_cord.id = obs_id;
 
                 return trans_cord;
             });
