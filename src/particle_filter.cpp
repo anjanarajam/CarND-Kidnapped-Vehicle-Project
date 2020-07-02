@@ -282,7 +282,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                     auto diff_y = transformed_cordinates[i].y - global_cordinates[j].y;
 
                     std::cout << particle.weight << std::endl;
-                    std::cout << diff_x << diff_y << cov_x << cov_y << normalizer << std::endl;
+                    std::cout << diff_x << "" << diff_y << "" << "" << cov_x << "" << cov_y << "" << normalizer << std::endl;
                     particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;                    
                 }
             }
