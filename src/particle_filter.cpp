@@ -210,8 +210,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         /* Set the size for the transformed co-ordinates */
         transformed_cordinates.reserve(observations.size());
 
-        particle.weight = 1.0;
-
         /* Get the x and y co-ordinates of the particle */
         x_p = particle.x;
         y_p = particle.y;
