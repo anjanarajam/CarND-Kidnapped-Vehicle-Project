@@ -165,12 +165,13 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
                 minimum_distance = nearest_neighbour;
                 /* Assign predicted measurement id to a variable*/
                 landmark_id = pred_meas.id;
+                obs_meas.id = landmark_id;
             }
         }
 
-        /* Assign that measured landmark id to the observed id who is the
-        nearest neighbour */
-        obs_meas.id = landmark_id;
+        ///* Assign that measured landmark id to the observed id who is the
+        //nearest neighbour */
+        //obs_meas.id = landmark_id;
         std::cout << "after:obs_meas.id: " << landmark_id << std::endl;
     }
 }
