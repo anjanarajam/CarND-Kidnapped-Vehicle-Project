@@ -141,7 +141,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
     
     /*For all the observated landmarks or the sensor measurements */
     for (auto& obs_meas : observations) {
-        std::cout << "before:obs_meas.id: " << landmark_id << std::endl;
+        std::cout << "before:obs_meas.id: " << obs_meas.id << std::endl;
         
         /* Take minimum distance as the maximum for the initial comparison*/
         minimum_distance = std::numeric_limits<double>::max();
