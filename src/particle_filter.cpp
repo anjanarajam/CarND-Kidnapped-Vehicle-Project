@@ -45,38 +45,35 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   std::normal_distribution<double> noise_y(0, std_y);
   std::normal_distribution<double> noise_theta(0, std_theta);
   
-  /* If not initialized */
-  while (!(initialized())) {
-      /* Get standard deviation values for x, y and theta */
-      std_x = std[0];
-      std_y = std[1];
-      std_theta = std[2];
+    /* Get standard deviation values for x, y and theta */
+    std_x = std[0];
+    std_y = std[1];
+    std_theta = std[2];
 
-      /* create a normal (Gaussian) distribution for x, y and theta 
-      around mean x, y, and theta and standard deviation std_x, std_y and std_theta */
-      std::normal_distribution<double> dist_x(x, std_x);
-      std::normal_distribution<double> dist_y(y, std_y);
-      std::normal_distribution<double> dist_theta(theta, std_theta);
+    /* create a normal (Gaussian) distribution for x, y and theta 
+    around mean x, y, and theta and standard deviation std_x, std_y and std_theta */
+    std::normal_distribution<double> dist_x(x, std_x);
+    std::normal_distribution<double> dist_y(y, std_y);
+    std::normal_distribution<double> dist_theta(theta, std_theta);
 
-      /* Allocate memory to the vector */
-      particles_.reserve(num_particles_);
+    /* Allocate memory to the vector */
+    particles_.reserve(num_particles_);
 
-      /* Get the values for the Particle structure */
-      for (int i = 0; i < num_particles_; i++) {
-          obj_part.id = i;
-          obj_part.x = dist_x(gen) + noise_x(gen);
-          obj_part.y = dist_y(gen) + noise_y(gen);
-          obj_part.theta = dist_theta(gen) + noise_theta(gen);
-          obj_part.weight = 1.0;
-          particles_.push_back(obj_part);
-          weights_.push_back(1.0);
-      }
+    /* Get the values for the Particle structure */
+    for (int i = 0; i < num_particles_; i++) {
+        obj_part.id = i;
+        obj_part.x = dist_x(gen) + noise_x(gen);
+        obj_part.y = dist_y(gen) + noise_y(gen);
+        obj_part.theta = dist_theta(gen) + noise_theta(gen);
+        obj_part.weight = 1.0;
+        particles_.push_back(obj_part);
+        weights_.push_back(1.0);
+    }
 
-      std::cout << weights_.size() << std::endl;
+    std::cout << weights_.size() << std::endl;
       
-      /* Initialize to true after initializing the particles */
-      is_initialized_ = true;
-  }
+    /* Initialize to true after initializing the particles */
+    is_initialized_ = true;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[],
@@ -144,6 +141,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
     
     /*For all the observated landmarks or the sensor measurements */
     for (auto& obs_meas : observations) {
+        std::cout << "before:obs_meas.id: " << landmark_id << std::endl;
         
         /* Take minimum distance as the maximum for the initial comparison*/
         minimum_distance = std::numeric_limits<double>::max();
@@ -154,8 +152,10 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
 
         /*For all the predicted landmarks or the map landmarks */
         for (const auto& pred_meas : predicted) {
+
+            std::cout << "pred_meas.id: " << pred_meas.id << std::endl;
             
-            /*the nearest neighbour is calculated by finding eucledian distance between 
+            /* The nearest neighbour is calculated by finding eucledian distance between 
             predicted and obsereved points  */
             nearest_neighbour = dist(pred_meas.x, pred_meas.y, obs_meas.x, obs_meas.y);
              
@@ -171,9 +171,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
         /* Assign that measured landmark id to the observed id who is the
         nearest neighbour */
         obs_meas.id = landmark_id;
-        std::cout << "obs_meas.id: " << landmark_id << std::endl;
-
-
+        std::cout << "after:obs_meas.id: " << landmark_id << std::endl;
     }
 }
 
@@ -295,7 +293,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     /* Update the weights vector */
     for (int idx = 0; idx < weights_.size(); idx++) {
         weights_[idx] = particles_[idx].weight;
-        std::cout << weights_[idx] << std::endl;
     }
  }
 
