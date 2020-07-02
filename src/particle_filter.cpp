@@ -109,8 +109,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     /* Every particle is moved at certain distance at a certain heading after delta t */
     for_each (particles_.begin(), particles_.end(), [&](Particle particle)
         {
-            particle.weight = 1;
-
             if (fabs(yaw_rate) < 0.001) {
                 particle.x += velocity * delta_t * cos(particle.theta);
                 particle.y += velocity * delta_t * sin(particle.theta);
@@ -220,6 +218,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         /* Get the sine and cos of the particle */
         sin_theta = sin(particle.theta);
         cos_theta = cos(particle.theta);
+
+        particle.weight = 1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /* Store the transformed co-ordinates */
