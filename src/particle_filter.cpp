@@ -30,20 +30,20 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-   /* Set the number of particles */
-  num_particles_ = 100  ;  
+  /* Set the number of particles */
+  num_particles_ = 100;
   /* Random number engine class that generates pseudo random numbers*/
   std::default_random_engine gen;
   /* Standard deviation values for x, y and theta*/
   double std_x{}, std_y{}, std_theta{};
-  /* Create an object for the particle */
-  Particle obj_part;
+  ///* Create an object for the particle */
+  //Particle obj_part;
 
-  /* create a noise (Gaussian noise) distribution for x, y and theta
-  around mean 0 and standard deviation std_x, std_y and std_theta */
-  std::normal_distribution<double> noise_x(0, std_x);
-  std::normal_distribution<double> noise_y(0, std_y);
-  std::normal_distribution<double> noise_theta(0, std_theta);
+  ///* create a noise (Gaussian noise) distribution for x, y and theta
+  //around mean 0 and standard deviation std_x, std_y and std_theta */
+  //std::normal_distribution<double> noise_x(0, std_x);
+  //std::normal_distribution<double> noise_y(0, std_y);
+  //std::normal_distribution<double> noise_theta(0, std_theta);
   
     /* Get standard deviation values for x, y and theta */
     std_x = std[0];
@@ -61,13 +61,17 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
     /* Get the values for the Particle structure */
     for (int i = 0; i < num_particles_; i++) {
+        /* Create an object for the particle */
+        Particle obj_part{};
         obj_part.id = i;
-        obj_part.x = dist_x(gen) + noise_x(gen);
-        obj_part.y = dist_y(gen) + noise_y(gen);
-        obj_part.theta = dist_theta(gen) + noise_theta(gen);
+        //obj_part.x = dist_x(gen) + noise_x(gen);
+        //obj_part.y = dist_y(gen) + noise_y(gen);
+        //obj_part.theta = dist_theta(gen) + noise_theta(gen);
+        obj_part.x = dist_x(gen);
+        obj_part.y = dist_y(gen);
+        obj_part.theta = dist_theta(gen);
         obj_part.weight = 1.0;
         particles_.push_back(obj_part);
-        weights_.push_back(1.0);
     }
 
     std::cout << weights_.size() << std::endl;
@@ -85,7 +89,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
      *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
      *  http://www.cplusplus.com/reference/random/default_random_engine/
      */
-    std::cout << "prediction" << std::endl;
+    //std::cout << "prediction" << std::endl;
 
     /* Random number engine class that generates pseudo random numbers */
     std::default_random_engine gen;
@@ -141,7 +145,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
     
     /*For all the observated landmarks or the sensor measurements */
     for (auto& obs_meas : observations) {
-        std::cout << "before:obs_meas.id: " << obs_meas.id << std::endl;
+        //std::cout << "before:obs_meas.id: " << obs_meas.id << std::endl;
         
         /* Take minimum distance as the maximum for the initial comparison*/
         minimum_distance = std::numeric_limits<double>::max();
@@ -153,7 +157,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
         /*For all the predicted landmarks or the map landmarks */
         for (const auto& pred_meas : predicted) {
 
-            std::cout << "pred_meas.id: " << pred_meas.id << std::endl;
+            //std::cout << "pred_meas.id: " << pred_meas.id << std::endl;
             
             /* The nearest neighbour is calculated by finding eucledian distance between 
             predicted and obsereved points  */
@@ -165,14 +169,13 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
                 minimum_distance = nearest_neighbour;
                 /* Assign predicted measurement id to a variable*/
                 landmark_id = pred_meas.id;
-                obs_meas.id = landmark_id;
             }
         }
 
         ///* Assign that measured landmark id to the observed id who is the
         //nearest neighbour */
-        //obs_meas.id = landmark_id;
-        std::cout << "after:obs_meas.id: " << landmark_id << std::endl;
+        obs_meas.id = landmark_id;
+        //std::cout << "after:obs_meas.id: " << landmark_id << std::endl;
     }
 }
 
@@ -203,7 +206,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
     /* Loop through every particle */
     for (auto& particle : particles_) { 
-        /* Initialize vector to store the transormed co-ordinates */
+        /* Initialize vector to store the transormed co-ordinates */ 
         std::vector<LandmarkObs> transformed_cordinates{};
         /* Initialize vector to store the global co-ordinates */
         std::vector<LandmarkObs> global_cordinates{};
@@ -283,18 +286,18 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                     auto diff_x = transformed_cordinates[i].x - global_cordinates[j].x;
                     auto diff_y = transformed_cordinates[i].y - global_cordinates[j].y;
 
-                    std::cout << "weight: " << particle.weight << std::endl;
-                    std::cout << diff_x << " " << diff_y << " " << " " << cov_x << " " << cov_y << " " << normalizer << std::endl;
+                    //std::cout << "weight: " << particle.weight << std::endl;
+                    //std::cout << diff_x << " " << diff_y << " " << " " << cov_x << " " << cov_y << " " << normalizer << std::endl;
                     particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;                    
                 }
             }
         }         
     } 
 
-    /* Update the weights vector */
-    for (int idx = 0; idx < weights_.size(); idx++) {
-        weights_[idx] = particles_[idx].weight;
-    }
+    ///* Update the weights vector */
+    //for (int idx = 0; idx < weights_.size(); idx++) {
+    //    weights_[idx] = particles_[idx].weight;
+    //}
  }
 
 void ParticleFilter::resample() {
@@ -308,7 +311,12 @@ void ParticleFilter::resample() {
     std::vector<Particle> new_particles(num_particles_);
     /* Random number engine class that generates pseudo random numbers */
     std::default_random_engine gen;
-    /*std::discrete_distribution produces random integers on the interval [0, n), where the probability 
+    /* Update the weights vector */
+    for (int idx = 0; idx < weights_.size(); idx++) {
+        weights_.push_back(particles_[idx].weight);
+    }
+
+    /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
     of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
 
