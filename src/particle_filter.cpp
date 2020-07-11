@@ -320,7 +320,7 @@ void ParticleFilter::resample() {
 
      /* Update the weights vector */
      for (int idx = 0; idx < particles_.size(); idx++) {
-         weights_.push_back(particles_[idx].weight);
+         weights_[idx] = particles_[idx].weight;
      }
 
      /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
