@@ -31,78 +31,78 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
      *   (and others in this file).
      */
      //
-     ///* Set the number of particles */
-     //num_particles_ = 100;
-     ///* Random number engine class that generates pseudo random numbers*/
-     //std::default_random_engine gen;
-     ///* Standard deviation values for x, y and theta*/
-     //double std_x{}, std_y{}, std_theta{};
-     /////* Create an object for the particle */
-     ////Particle obj_part;
+     /* Set the number of particles */
+     num_particles_ = 100;
+     /* Random number engine class that generates pseudo random numbers*/
+     std::default_random_engine gen;
+     /* Standard deviation values for x, y and theta*/
+     double std_x{}, std_y{}, std_theta{};
+     ///* Create an object for the particle */
+     //Particle obj_part;
 
-     /////* create a noise (Gaussian noise) distribution for x, y and theta
-     ////around mean 0 and standard deviation std_x, std_y and std_theta */
-     ////std::normal_distribution<double> noise_x(0, std_x);
-     ////std::normal_distribution<double> noise_y(0, std_y);
-     ////std::normal_distribution<double> noise_theta(0, std_theta);
-     //
-     //  /* Get standard deviation values for x, y and theta */
-     //  std_x = std[0];
-     //  std_y = std[1];
-     //  std_theta = std[2];
+     ///* create a noise (Gaussian noise) distribution for x, y and theta
+     //around mean 0 and standard deviation std_x, std_y and std_theta */
+     //std::normal_distribution<double> noise_x(0, std_x);
+     //std::normal_distribution<double> noise_y(0, std_y);
+     //std::normal_distribution<double> noise_theta(0, std_theta);
+     
+       /* Get standard deviation values for x, y and theta */
+       std_x = std[0];
+       std_y = std[1];
+       std_theta = std[2];
 
-     //  /* create a normal (Gaussian) distribution for x, y and theta 
-     //  around mean x, y, and theta and standard deviation std_x, std_y and std_theta */
-     //  std::normal_distribution<double> dist_x(x, std_x);
-     //  std::normal_distribution<double> dist_y(y, std_y);
-     //  std::normal_distribution<double> dist_theta(theta, std_theta);
+       /* create a normal (Gaussian) distribution for x, y and theta 
+       around mean x, y, and theta and standard deviation std_x, std_y and std_theta */
+       std::normal_distribution<double> dist_x(x, std_x);
+       std::normal_distribution<double> dist_y(y, std_y);
+       std::normal_distribution<double> dist_theta(theta, std_theta);
 
-     //  /* Allocate memory to the vector */
-     //  particles_.reserve(num_particles_);
+       /* Allocate memory to the vector */
+       particles_.reserve(num_particles_);
 
-     //  /* Get the values for the Particle structure */
-     //  for (int i = 0; i < num_particles_; i++) {
-     //      /* Create an object for the particle */
-     //      Particle obj_part{};
-     //      obj_part.id = i;
-     //      //obj_part.x = dist_x(gen) + noise_x(gen);
-     //      //obj_part.y = dist_y(gen) + noise_y(gen);
-     //      //obj_part.theta = dist_theta(gen) + noise_theta(gen);
-     //      obj_part.x = dist_x(gen);
-     //      obj_part.y = dist_y(gen);
-     //      obj_part.theta = dist_theta(gen);
-     //      obj_part.weight = 1.0;
-     //      particles_.push_back(obj_part);
-     //  }
+       /* Get the values for the Particle structure */
+       for (int i = 0; i < num_particles_; i++) {
+           /* Create an object for the particle */
+           Particle obj_part{};
+           obj_part.id = i;
+           //obj_part.x = dist_x(gen) + noise_x(gen);
+           //obj_part.y = dist_y(gen) + noise_y(gen);
+           //obj_part.theta = dist_theta(gen) + noise_theta(gen);
+           obj_part.x = dist_x(gen);
+           obj_part.y = dist_y(gen);
+           obj_part.theta = dist_theta(gen);
+           obj_part.weight = 1.0;
+           particles_.push_back(obj_part);
+       }
 
-     //  std::cout << weights_.size() << std::endl;
-     //    
-     //  /* Initialize to true after initializing the particles */
-     //  is_initialized_ = true;
+       std::cout << weights_.size() << std::endl;
+         
+       /* Initialize to true after initializing the particles */
+       is_initialized_ = true;
 
-    num_particles_ = 100;  // TODO: Set the number of particles
+    //num_particles_ = 100;  // TODO: Set the number of particles
 
-    std::default_random_engine gen;
+    //std::default_random_engine gen;
 
-    std::normal_distribution<double> dist_x(x, std[0]);
-    std::normal_distribution<double> dist_y(y, std[1]);
-    std::normal_distribution<double> dist_theta(theta, std[2]);
+    //std::normal_distribution<double> dist_x(x, std[0]);
+    //std::normal_distribution<double> dist_y(y, std[1]);
+    //std::normal_distribution<double> dist_theta(theta, std[2]);
 
-    for (int i = 0; i < num_particles_; i++) {
+    //for (int i = 0; i < num_particles_; i++) {
 
-        // Definition of a new particle and update its values
-        Particle p;
-        p.id = i;
-        p.x = dist_x(gen);
-        p.y = dist_y(gen);
-        p.theta = dist_theta(gen);
-        p.weight = 1.0;
+    //    // Definition of a new particle and update its values
+    //    Particle p;
+    //    p.id = i;
+    //    p.x = dist_x(gen);
+    //    p.y = dist_y(gen);
+    //    p.theta = dist_theta(gen);
+    //    p.weight = 1.0;
 
-        // Append p to particle set
-        particles_.push_back(p);
-    }
-    // Now the particle filter is initialized
-    is_initialized_ = true;
+    //    // Append p to particle set
+    //    particles_.push_back(p);
+    //}
+    //// Now the particle filter is initialized
+    //is_initialized_ = true;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[],
@@ -338,10 +338,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         }
     }
 
-    ///* Update the weights vector */
-    //for (int idx = 0; idx < weights_.size(); idx++) {
-    //    weights_[idx] = particles_[idx].weight;
-    //}
+    /* Update the weights vector */
+    for (int idx = 0; idx < weights_.size(); idx++) {
+        weights_[idx] = particles_[idx].weight;
+    }
 }
 
 void ParticleFilter::resample() {
@@ -351,43 +351,43 @@ void ParticleFilter::resample() {
      * NOTE: You may find std::discrete_distribution helpful here.
      *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
      */
-     ///* Create a vector of new particles */
-     //std::vector<Particle> new_particles(num_particles_);
-     ///* Random number engine class that generates pseudo random numbers */
-     //std::default_random_engine gen;
-     ///* Update the weights vector */
-     //for (int idx = 0; idx < weights_.size(); idx++) {
-     //    weights_.push_back(particles_[idx].weight);
-     //}
+     /* Create a vector of new particles */
+     std::vector<Particle> new_particles(num_particles_);
+     /* Random number engine class that generates pseudo random numbers */
+     std::default_random_engine gen;
+     /* Update the weights vector */
+     for (int idx = 0; idx < weights_.size(); idx++) {
+         weights_.push_back(particles_[idx].weight);
+     }
 
-     ///*std::discrete_distribution produces random integers on the interval [0, n), where the probability
-     //of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
-     //std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
+     /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
+     of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
+     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
 
-     ///* Create new particles with probability proportional to their weight */
-     //for (auto i = 0; i < particles_.size(); i++) {
-     //    new_particles[i] = particles_[distr_index(gen)];
-     //}
+     /* Create new particles with probability proportional to their weight */
+     for (auto i = 0; i < particles_.size(); i++) {
+         new_particles[i] = particles_[distr_index(gen)];
+     }
 
-     ///* Copy it to the original particle vector */
-     //particles_ = std::move(new_particles);
+     /* Copy it to the original particle vector */
+     particles_ = std::move(new_particles);
 
-    vector<double> p_weights;
-    for (int i = 0; i < particles_.size(); i++) {
-        p_weights.push_back(particles_[i].weight);
-    }
-    std::vector<Particle> new_particles;
-    /* Random number engine class that generates pseudo random numbers */
-    std::default_random_engine gen;
-    /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
-    of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
-    std::discrete_distribution<size_t> distr_index(p_weights.begin(), p_weights.end());
-    /* Create new particles with probability proportional to their weight */
-    for (auto i = 0; i < particles_.size(); i++) {
-        new_particles.push_back(particles_[distr_index(gen)]);
-    }
-    /* Copy it to the original particle vector */
-    particles_ = new_particles;
+    //vector<double> p_weights;
+    //for (int i = 0; i < particles_.size(); i++) {
+    //    p_weights.push_back(particles_[i].weight);
+    //}
+    //std::vector<Particle> new_particles;
+    ///* Random number engine class that generates pseudo random numbers */
+    //std::default_random_engine gen;
+    ///*std::discrete_distribution produces random integers on the interval [0, n), where the probability
+    //of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
+    //std::discrete_distribution<size_t> distr_index(p_weights.begin(), p_weights.end());
+    ///* Create new particles with probability proportional to their weight */
+    //for (auto i = 0; i < particles_.size(); i++) {
+    //    new_particles.push_back(particles_[distr_index(gen)]);
+    //}
+    ///* Copy it to the original particle vector */
+    //particles_ = new_particles;
 }
 
 void ParticleFilter::SetAssociations(Particle& particle,
