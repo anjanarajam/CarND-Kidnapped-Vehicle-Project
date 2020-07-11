@@ -133,6 +133,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
             particles_[i].y += velocity / yaw_rate * (cos(particles_[i].theta) - cos(particles_[i].theta + yaw_rate * delta_t));
             particles_[i].theta += yaw_rate * delta_t;
         }
+
         /* Add noise to every particle after upating it with motion */
         particles_[i].x += dist_x(gen);
         particles_[i].y += dist_y(gen);
@@ -170,8 +171,6 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
         /*For all the predicted landmarks or the map landmarks */
         for (const auto& pred_meas : predicted) {
 
-            //std::cout << "pred_meas.id: " << pred_meas.id << std::endl;
-
             /* The nearest neighbour is calculated by finding eucledian distance between
             predicted and obsereved points  */
             nearest_neighbour = dist(pred_meas.x, pred_meas.y, obs_meas.x, obs_meas.y);
@@ -188,7 +187,6 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
         ///* Assign that measured landmark id to the observed id who is the
         //nearest neighbour */
         obs_meas.id = landmark_id;
-        //std::cout << "after:obs_meas.id: " << landmark_id << std::endl;
     }
 }
 
@@ -317,15 +315,17 @@ void ParticleFilter::resample() {
      std::vector<Particle> new_particles(num_particles_);
      /* Random number engine class that generates pseudo random numbers */
      std::default_random_engine gen;
+     /* Create a vector for weights */
+     std::vector<double> weights;
+
      /* Update the weights vector */
      for (int idx = 0; idx < weights_.size(); idx++) {
-         //weights_.push_back(particles_[idx].weight);
-         weights_[idx] = particles_[idx].weight;
+         weights.push_back(particles_[idx].weight);
      }
 
      /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
      of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
-     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
+     std::discrete_distribution<size_t> distr_index(weights.begin(), weights.end());
 
      /* Create new particles with probability proportional to their weight */
      for (auto i = 0; i < particles_.size(); i++) {
