@@ -319,7 +319,7 @@ void ParticleFilter::resample() {
      std::vector<double> weights;
 
      /* Update the weights vector */
-     for (int idx = 0; idx < weights_.size(); idx++) {
+     for (int idx = 0; idx < particles_.size(); idx++) {
          weights.push_back(particles_[idx].weight);
      }
 
