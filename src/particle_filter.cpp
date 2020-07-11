@@ -313,43 +313,43 @@ void ParticleFilter::resample() {
      * NOTE: You may find std::discrete_distribution helpful here.
      *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
      */
-     ///* Create a vector of new particles */
-     //std::vector<Particle> new_particles(num_particles_);
-     ///* Random number engine class that generates pseudo random numbers */
-     //std::default_random_engine gen;
-     ///* Update the weights vector */
-     //for (int idx = 0; idx < weights_.size(); idx++) {
-     //    weights_.push_back(particles_[idx].weight);
-     //}
+     /* Create a vector of new particles */
+     std::vector<Particle> new_particles(num_particles_);
+     /* Random number engine class that generates pseudo random numbers */
+     std::default_random_engine gen;
+     /* Update the weights vector */
+     for (int idx = 0; idx < weights_.size(); idx++) {
+         weights_.push_back(particles_[idx].weight);
+     }
 
-     ///*std::discrete_distribution produces random integers on the interval [0, n), where the probability
-     //of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
-     //std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
+     /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
+     of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
+     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
 
-     ///* Create new particles with probability proportional to their weight */
-     //for (auto i = 0; i < particles_.size(); i++) {
-     //    new_particles[i] = particles_[distr_index(gen)];
-     //}
+     /* Create new particles with probability proportional to their weight */
+     for (auto i = 0; i < particles_.size(); i++) {
+         new_particles[i] = particles_[distr_index(gen)];
+     }
 
-     ///* Copy it to the original particle vector */
-     //particles_ = std::move(new_particles);
+     /* Copy it to the original particle vector */
+     particles_ = std::move(new_particles);
 
-    vector<double> p_weights;
-    for (int i = 0; i < particles_.size(); i++) {
-        p_weights.push_back(particles_[i].weight);
-    }
-    std::vector<Particle> new_particles;
-    /* Random number engine class that generates pseudo random numbers */
-    std::default_random_engine gen;
-    /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
-    of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
-    std::discrete_distribution<size_t> distr_index(p_weights.begin(), p_weights.end());
-    /* Create new particles with probability proportional to their weight */
-    for (auto i = 0; i < particles_.size(); i++) {
-        new_particles.push_back(particles_[distr_index(gen)]);
-    }
-    /* Copy it to the original particle vector */
-    particles_ = new_particles;
+    //vector<double> p_weights;
+    //for (int i = 0; i < particles_.size(); i++) {
+    //    p_weights.push_back(particles_[i].weight);
+    //}
+    //std::vector<Particle> new_particles;
+    ///* Random number engine class that generates pseudo random numbers */
+    //std::default_random_engine gen;
+    ///*std::discrete_distribution produces random integers on the interval [0, n), where the probability
+    //of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
+    //std::discrete_distribution<size_t> distr_index(p_weights.begin(), p_weights.end());
+    ///* Create new particles with probability proportional to their weight */
+    //for (auto i = 0; i < particles_.size(); i++) {
+    //    new_particles.push_back(particles_[distr_index(gen)]);
+    //}
+    ///* Copy it to the original particle vector */
+    //particles_ = new_particles;
 }
 
 void ParticleFilter::SetAssociations(Particle& particle,
