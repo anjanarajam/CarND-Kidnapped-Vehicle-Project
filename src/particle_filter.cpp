@@ -315,17 +315,17 @@ void ParticleFilter::resample() {
      std::vector<Particle> new_particles(num_particles_);
      /* Random number engine class that generates pseudo random numbers */
      std::default_random_engine gen;
-     /* Create a vector for weights */
-     std::vector<double> weights;
+     ///* Create a vector for weights */
+     //std::vector<double> weights;
 
      /* Update the weights vector */
      for (int idx = 0; idx < particles_.size(); idx++) {
-         weights.push_back(particles_[idx].weight);
+         weights_.push_back(particles_[idx].weight);
      }
 
      /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
      of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
-     std::discrete_distribution<size_t> distr_index(weights.begin(), weights.end());
+     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
 
      /* Create new particles with probability proportional to their weight */
      for (auto i = 0; i < particles_.size(); i++) {
