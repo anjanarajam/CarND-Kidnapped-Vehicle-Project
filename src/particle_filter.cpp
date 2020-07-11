@@ -30,7 +30,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
      * NOTE: Consult particle_filter.h for more information about this method
      *   (and others in this file).
      */
-     //
+     
      /* Set the number of particles */
      num_particles_ = 100;
      /* Random number engine class that generates pseudo random numbers*/
@@ -83,9 +83,8 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
      *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
      *  http://www.cplusplus.com/reference/random/default_random_engine/
      */
-     //std::cout << "prediction" << std::endl;
 
-     /* Random number engine class that generates pseudo random numbers */
+    /* Random number engine class that generates pseudo random numbers */
     std::default_random_engine gen;
     /* Standard deviation values for x, y and theta*/
     double std_x{}, std_y{}, std_theta{};
@@ -139,8 +138,6 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
 
     /*For all the observated landmarks or the sensor measurements */
     for (auto& obs_meas : observations) {
-        //std::cout << "before:obs_meas.id: " << obs_meas.id << std::endl;
-
         /* Take minimum distance as the maximum for the initial comparison*/
         minimum_distance = std::numeric_limits<double>::max();
 
@@ -164,8 +161,8 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
             }
         }
 
-        ///* Assign that measured landmark id to the observed id who is the
-        //nearest neighbour */
+        /* Assign that measured landmark id to the observed id who is the
+        nearest neighbour */
         obs_meas.id = landmark_id;
     }
 }
@@ -194,67 +191,17 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         /* Initialize vector to store the global co-ordinates */
         std::vector<LandmarkObs> global_cordinates{};
 
+        /* First Step: Transform car sensor landmark observation from the car co-ordinate system to map
+        co-ordinate system for every particle */
         transformed_cordinates = transform_car_to_map_coordinates(observations, particle);
 
-
-
-
-
-        /* Define distance between particle and the map landmark */
-        double distance{};
-        particle.weight = 1;
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                /* Second Step: Associating these transformed observtions with the nearest landmark on the map */
-        for (const auto& glob_cord : map_landmarks.landmark_list) {
-            /* Define structure for landmark */
-            LandmarkObs map{};
-            double x_p{}, y_p{};
-
-            /* Get the x and y co-ordinates of the particle */
-            x_p = particle.x;
-            y_p = particle.y;
-
-            /* Check whether the distance between the particle and the map landmark is within the sensor range */
-            distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);
-
-            /* Update landmark structure if distance is within the sensor range */
-            if (distance < sensor_range) {
-
-                map.x = glob_cord.x_f;
-                map.y = glob_cord.y_f;
-                map.id = glob_cord.id_i;
-
-                /* Update the global co-ordinate structure */
-                global_cordinates.push_back(map);
-            }
-        }
-
-        /* Associate these transformed observtions with the nearest landmark on the map */
+        /* Second Step: Associating these transformed observtions with the nearest landmark on the map */
         /* Here global_cordinates is the prediction and the transformed cordinate is the observation */
+        global_cordinates = get_global_coordinates(map_landmarks, particle, sensor_range);
         dataAssociation(global_cordinates, transformed_cordinates);
 
         /* Third Step: Update particle weight */
-
-        /* Set values for multi-variate Gaussian distribution */
-        auto cov_x = std_landmark[0] * std_landmark[0];
-        auto cov_y = std_landmark[1] * std_landmark[1];
-        auto normalizer = 2.0 * M_PI * std_landmark[0] * std_landmark[1];
-
-        /* Check if the transformed cordinates id gets matched with global cordinates id */
-        for (int i = 0; i < transformed_cordinates.size(); i++) {
-            for (int j = 0; j < global_cordinates.size(); j++) {
-                if (transformed_cordinates[i].id == global_cordinates[j].id) {
-                    auto diff_x = transformed_cordinates[i].x - global_cordinates[j].x;
-                    auto diff_y = transformed_cordinates[i].y - global_cordinates[j].y;
-
-                    particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;
-                }
-            }
-        }
+        update_particle_weight(transformed_cordinates, global_cordinates, particle, std_landmark);
     }
 }
 
@@ -265,11 +212,12 @@ void ParticleFilter::resample() {
      * NOTE: You may find std::discrete_distribution helpful here.
      *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
      */
+
      /* Create a vector of new particles */
      std::vector<Particle> new_particles(num_particles_);
      /* Random number engine class that generates pseudo random numbers */
      std::default_random_engine gen;
-     ///* Create a vector for weights */
+     /* Create a vector for weights */
      std::vector<double> weights;
 
      /* Update the weights vector */
@@ -330,16 +278,11 @@ string ParticleFilter::getSenseCoord(Particle best, string coord) {
     return s;
 }
 
-/* First Step: Transform car sensor landmark observation from the car co-ordinate system to map
-co-ordinate system for every particle */
 const std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates(const vector<LandmarkObs>& observations, Particle &particle) {
     /* Initialize particle x, y co-ordinates, and its sine and cos theta */
     double x_p{}, y_p{}, sin_theta{}, cos_theta{};
-
     /* Initialize vector to store the transormed co-ordinates */
     std::vector<LandmarkObs> transformed_cordinates{};
-    /* Initialize vector to store the global co-ordinates */
-    std::vector<LandmarkObs> global_cordinates{};
     /* Initialize the observed measurements for every particle */
     double x_c{}, y_c{}, obs_id;
 
@@ -374,4 +317,57 @@ const std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates
         });
 
     return transformed_cordinates;
+}
+
+const std::vector<LandmarkObs>& ParticleFilter::get_global_coordinates(const Map& map_landmarks, Particle& particle, double sensor_range) {
+    for (const auto& glob_cord : map_landmarks.landmark_list) {
+        /* Initialize vector to store the global co-ordinates */
+        std::vector<LandmarkObs> global_cordinates{};
+        /* Define structure for landmark */
+        LandmarkObs map{};
+        double x_p{}, y_p{};
+        double distance{};
+
+        /* Get the x and y co-ordinates of the particle */
+        x_p = particle.x;
+        y_p = particle.y;
+
+        /* Check whether the distance between the particle and the map landmark is within the sensor range */
+        distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);
+
+        /* Update landmark structure if distance is within the sensor range */
+        if (distance < sensor_range) {
+
+            map.x = glob_cord.x_f;
+            map.y = glob_cord.y_f;
+            map.id = glob_cord.id_i;
+
+            /* Update the global co-ordinate structure */
+            global_cordinates.push_back(map);
+        }
+
+        return global_cordinates;
+    }
+}
+
+void ParticleFilter::update_particle_weight(const std::vector<LandmarkObs>& transformed_cordinates, const std::vector<LandmarkObs>& global_cordinates,
+       Particle& particle, double std_landmark[]) {
+    /* Initialize particle weight to 1 at every loop */
+    particle.weight = 1;
+    /* Set values for multi-variate Gaussian distribution */
+    auto cov_x = std_landmark[0] * std_landmark[0];
+    auto cov_y = std_landmark[1] * std_landmark[1];
+    auto normalizer = 2.0 * M_PI * std_landmark[0] * std_landmark[1];
+
+    /* Check if the transformed cordinates id gets matched with global cordinates id */
+    for (int i = 0; i < transformed_cordinates.size(); i++) {
+        for (int j = 0; j < global_cordinates.size(); j++) {
+            if (transformed_cordinates[i].id == global_cordinates[j].id) {
+                auto diff_x = transformed_cordinates[i].x - global_cordinates[j].x;
+                auto diff_y = transformed_cordinates[i].y - global_cordinates[j].y;
+
+                particle.weight *= exp(-(diff_x * diff_x / (2 * cov_x) + diff_y * diff_y / (2 * cov_y))) / normalizer;
+            }
+        }
+    }
 }
