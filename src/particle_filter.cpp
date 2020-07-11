@@ -37,72 +37,41 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
      std::default_random_engine gen;
      /* Standard deviation values for x, y and theta*/
      double std_x{}, std_y{}, std_theta{};
-     ///* Create an object for the particle */
-     //Particle obj_part;
+     /* Create an object for the particle */
+     Particle obj_part;
 
-     ///* create a noise (Gaussian noise) distribution for x, y and theta
-     //around mean 0 and standard deviation std_x, std_y and std_theta */
-     //std::normal_distribution<double> noise_x(0, std_x);
-     //std::normal_distribution<double> noise_y(0, std_y);
-     //std::normal_distribution<double> noise_theta(0, std_theta);
+     /* create a noise (Gaussian noise) distribution for x, y and theta
+     around mean 0 and standard deviation std_x, std_y and std_theta */
+     std::normal_distribution<double> noise_x(0, std_x);
+     std::normal_distribution<double> noise_y(0, std_y);
+     std::normal_distribution<double> noise_theta(0, std_theta);
      
-       /* Get standard deviation values for x, y and theta */
-       std_x = std[0];
-       std_y = std[1];
-       std_theta = std[2];
+    /* Get standard deviation values for x, y and theta */
+    std_x = std[0];
+    std_y = std[1];
+    std_theta = std[2];
 
-       /* create a normal (Gaussian) distribution for x, y and theta 
-       around mean x, y, and theta and standard deviation std_x, std_y and std_theta */
-       std::normal_distribution<double> dist_x(x, std_x);
-       std::normal_distribution<double> dist_y(y, std_y);
-       std::normal_distribution<double> dist_theta(theta, std_theta);
+    /* create a normal (Gaussian) distribution for x, y and theta 
+    around mean x, y, and theta and standard deviation std_x, std_y and std_theta */
+    std::normal_distribution<double> dist_x(x, std_x);
+    std::normal_distribution<double> dist_y(y, std_y);
+    std::normal_distribution<double> dist_theta(theta, std_theta);
 
-       /* Allocate memory to the vector */
-       particles_.reserve(num_particles_);
+    /* Allocate memory to the vector */
+    particles_.reserve(num_particles_);
 
-       /* Get the values for the Particle structure */
-       for (int i = 0; i < num_particles_; i++) {
-           /* Create an object for the particle */
-           Particle obj_part{};
-           obj_part.id = i;
-           //obj_part.x = dist_x(gen) + noise_x(gen);
-           //obj_part.y = dist_y(gen) + noise_y(gen);
-           //obj_part.theta = dist_theta(gen) + noise_theta(gen);
-           obj_part.x = dist_x(gen);
-           obj_part.y = dist_y(gen);
-           obj_part.theta = dist_theta(gen);
-           obj_part.weight = 1.0;
-           particles_.push_back(obj_part);
-       }
+    /* Get the values for the Particle structure */
+    for (int i = 0; i < num_particles_; i++) {
+        obj_part.id = i;
+        obj_part.x = dist_x(gen) + noise_x(gen);
+        obj_part.y = dist_y(gen) + noise_y(gen);
+        obj_part.theta = dist_theta(gen) + noise_theta(gen);
+        obj_part.weight = 1.0;
+        particles_.push_back(obj_part);
+    }
 
-       std::cout << weights_.size() << std::endl;
-         
-       /* Initialize to true after initializing the particles */
-       is_initialized_ = true;
-
-    //num_particles_ = 100;  // TODO: Set the number of particles
-
-    //std::default_random_engine gen;
-
-    //std::normal_distribution<double> dist_x(x, std[0]);
-    //std::normal_distribution<double> dist_y(y, std[1]);
-    //std::normal_distribution<double> dist_theta(theta, std[2]);
-
-    //for (int i = 0; i < num_particles_; i++) {
-
-    //    // Definition of a new particle and update its values
-    //    Particle p;
-    //    p.id = i;
-    //    p.x = dist_x(gen);
-    //    p.y = dist_y(gen);
-    //    p.theta = dist_theta(gen);
-    //    p.weight = 1.0;
-
-    //    // Append p to particle set
-    //    particles_.push_back(p);
-    //}
-    //// Now the particle filter is initialized
-    //is_initialized_ = true;
+    /* Initialize to true after initializing the particles */
+    is_initialized_ = true;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[],
