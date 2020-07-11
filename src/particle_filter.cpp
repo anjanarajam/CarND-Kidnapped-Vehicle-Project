@@ -187,55 +187,24 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
      *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
      */
 
-     /* First Step: Transform car sensor landmark observation from the car co-ordinate system to map
-     co-ordinate system for every particle */
-
-     /* Initialize particle x, y co-ordinates, and its sine and cos theta */
-    double x_p{}, y_p{}, sin_theta{}, cos_theta{};
-    /* Define distance between particle and the map landmark */
-    double distance{};
-
-    /* Loop through every particle */
+     /* Loop through every particle */
     for (auto& particle : particles_) {
         /* Initialize vector to store the transormed co-ordinates */
         std::vector<LandmarkObs> transformed_cordinates{};
         /* Initialize vector to store the global co-ordinates */
         std::vector<LandmarkObs> global_cordinates{};
-        /* Initialize the observed measurements for every particle */
-        double x_c{}, y_c{}, obs_id;
 
-        /* Set the size for the transformed co-ordinates */
-        transformed_cordinates.reserve(observations.size());
+        transformed_cordinates = transform_car_to_map_coordinates(observations, particle);
 
-        /* Get the x and y co-ordinates of the particle */
-        x_p = particle.x;
-        y_p = particle.y;
 
-        /* Get the sine and cos of the particle */
-        sin_theta = sin(particle.theta);
-        cos_theta = cos(particle.theta);
 
+
+
+        /* Define distance between particle and the map landmark */
+        double distance{};
         particle.weight = 1;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                /* Store the transformed co-ordinates */
-        std::transform(observations.begin(), observations.end(), std::back_inserter(transformed_cordinates),
-            [&](LandmarkObs obs_meas) {
-                /* Get the x and y co-ordinates of the observed measurements */
-                x_c = obs_meas.x;
-                y_c = obs_meas.y;
-                obs_id = obs_meas.id;
-
-                /* Intialize the object of the structure LandmarkObs to store values */
-                LandmarkObs trans_cord{};
-
-                /* Update the structure */
-                trans_cord.x = x_p + cos_theta * x_c - sin_theta * y_c;
-                trans_cord.y = y_p + sin_theta * x_c + cos_theta * y_c;
-                trans_cord.id = obs_id;
-
-                return trans_cord;
-            });
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -243,6 +212,11 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         for (const auto& glob_cord : map_landmarks.landmark_list) {
             /* Define structure for landmark */
             LandmarkObs map{};
+            double x_p{}, y_p{};
+
+            /* Get the x and y co-ordinates of the particle */
+            x_p = particle.x;
+            y_p = particle.y;
 
             /* Check whether the distance between the particle and the map landmark is within the sensor range */
             distance = dist(x_p, y_p, glob_cord.x_f, glob_cord.y_f);
@@ -354,4 +328,50 @@ string ParticleFilter::getSenseCoord(Particle best, string coord) {
     string s = ss.str();
     s = s.substr(0, s.length() - 1);  // get rid of the trailing space
     return s;
+}
+
+/* First Step: Transform car sensor landmark observation from the car co-ordinate system to map
+co-ordinate system for every particle */
+const std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates(const vector<LandmarkObs>& observations, Particle &particle) {
+    /* Initialize particle x, y co-ordinates, and its sine and cos theta */
+    double x_p{}, y_p{}, sin_theta{}, cos_theta{};
+
+    /* Initialize vector to store the transormed co-ordinates */
+    std::vector<LandmarkObs> transformed_cordinates{};
+    /* Initialize vector to store the global co-ordinates */
+    std::vector<LandmarkObs> global_cordinates{};
+    /* Initialize the observed measurements for every particle */
+    double x_c{}, y_c{}, obs_id;
+
+    /* Set the size for the transformed co-ordinates */
+    transformed_cordinates.reserve(observations.size());
+
+    /* Get the x and y co-ordinates of the particle */
+    x_p = particle.x;
+    y_p = particle.y;
+
+    /* Get the sine and cos of the particle */
+    sin_theta = sin(particle.theta);
+    cos_theta = cos(particle.theta);    
+
+    /* Store the transformed co-ordinates */
+    std::transform(observations.begin(), observations.end(), std::back_inserter(transformed_cordinates),
+        [&](LandmarkObs obs_meas) {
+            /* Get the x and y co-ordinates of the observed measurements */
+            x_c = obs_meas.x;
+            y_c = obs_meas.y;
+            obs_id = obs_meas.id;
+
+            /* Intialize the object of the structure LandmarkObs to store values */
+            LandmarkObs trans_cord{};
+
+            /* Update the structure */
+            trans_cord.x = x_p + cos_theta * x_c - sin_theta * y_c;
+            trans_cord.y = y_p + sin_theta * x_c + cos_theta * y_c;
+            trans_cord.id = obs_id;
+
+            return trans_cord;
+        });
+
+    return transformed_cordinates;
 }

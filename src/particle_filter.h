@@ -108,6 +108,11 @@ class ParticleFilter {
   std::string getAssociations(Particle best);
   std::string getSenseCoord(Particle best, std::string coord);
 
+  /**
+ * Used for ...
+ */
+  const std::vector<LandmarkObs>& transform_car_to_map_coordinates(const std::vector<LandmarkObs>& observations, Particle &particle);
+
   // Set of current particles
   std::vector<Particle> particles_;
 
