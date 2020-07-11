@@ -112,12 +112,12 @@ class ParticleFilter {
    * Used for transforming car sensor landmark observation from the car co-ordinate system to map
    * co-ordinate system for every particle
    */
-  const std::vector<LandmarkObs>& transform_car_to_map_coordinates(const std::vector<LandmarkObs>& observations, Particle &particle);
+  std::vector<LandmarkObs>& transform_car_to_map_coordinates(const std::vector<LandmarkObs>& observations, Particle &particle);
 
   /**
    * Used for associating these transformed observtions with the nearest landmark on the map
    */
-  const std::vector<LandmarkObs>& get_global_coordinates(const Map& map_landmarks, Particle& particle, double sensor_range);
+  std::vector<LandmarkObs>& get_global_coordinates(const Map& map_landmarks, Particle& particle, double sensor_range);
 
   /**
    * Used for updating weight particle by particle

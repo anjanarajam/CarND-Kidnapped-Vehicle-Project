@@ -278,13 +278,14 @@ string ParticleFilter::getSenseCoord(Particle best, string coord) {
     return s;
 }
 
-const std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates(const vector<LandmarkObs>& observations, Particle &particle) {
+std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates(const vector<LandmarkObs>& observations, Particle &particle) {
+
     /* Initialize particle x, y co-ordinates, and its sine and cos theta */
     double x_p{}, y_p{}, sin_theta{}, cos_theta{};
     /* Initialize vector to store the transormed co-ordinates */
     std::vector<LandmarkObs> transformed_cordinates{};
     /* Initialize the observed measurements for every particle */
-    double x_c{}, y_c{}, obs_id;
+    double x_c{}, y_c{}, obs_id{};
 
     /* Set the size for the transformed co-ordinates */
     transformed_cordinates.reserve(observations.size());
@@ -319,7 +320,8 @@ const std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates
     return transformed_cordinates;
 }
 
-const std::vector<LandmarkObs>& ParticleFilter::get_global_coordinates(const Map& map_landmarks, Particle& particle, double sensor_range) {
+std::vector<LandmarkObs>& ParticleFilter::get_global_coordinates(const Map& map_landmarks, Particle& particle, double sensor_range) {
+
     /* Initialize vector to store the global co-ordinates */
     std::vector<LandmarkObs> global_cordinates{};
 
@@ -353,6 +355,7 @@ const std::vector<LandmarkObs>& ParticleFilter::get_global_coordinates(const Map
 
 void ParticleFilter::update_particle_weight(const std::vector<LandmarkObs>& transformed_cordinates, const std::vector<LandmarkObs>& global_cordinates,
        Particle& particle, double std_landmark[]) {
+
     /* Initialize particle weight to 1 at every loop */
     particle.weight = 1;
     /* Set values for multi-variate Gaussian distribution */
