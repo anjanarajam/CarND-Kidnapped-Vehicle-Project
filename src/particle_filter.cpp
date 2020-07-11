@@ -102,7 +102,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     std::normal_distribution<double> dist_theta(0, std_theta);
 
     /* Every particle is moved at certain distance at a certain heading after delta t */
-    std::for_each(particles_.begin(), particles_.end(), [&](Particle particle)
+    for_each(particles_.begin(), particles_.end(), [&](Particle &particle)
         {
             if (fabs(yaw_rate) < 0.001) {
                 particle.x += velocity * delta_t * cos(particle.theta);
@@ -119,26 +119,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
             particle.y += dist_y(gen);
             particle.theta += dist_theta(gen);
         });
-
-
-    ///* Every particle is moved at certain distance at a certain heading after delta t */
-    //for (int i = 0; i < num_particles_; i++)
-    //{
-    //    if (fabs(yaw_rate) < 0.001) {
-    //        particles_[i].x += velocity * delta_t * cos(particles_[i].theta);
-    //        particles_[i].y += velocity * delta_t * sin(particles_[i].theta);
-    //    }
-    //    else {
-    //        particles_[i].x += velocity / yaw_rate * (sin(particles_[i].theta + yaw_rate * delta_t) - sin(particles_[i].theta));
-    //        particles_[i].y += velocity / yaw_rate * (cos(particles_[i].theta) - cos(particles_[i].theta + yaw_rate * delta_t));
-    //        particles_[i].theta += yaw_rate * delta_t;
-    //    }
-
-    //    /* Add noise to every particle after upating it with motion */
-    //    particles_[i].x += dist_x(gen);
-    //    particles_[i].y += dist_y(gen);
-    //    particles_[i].theta += dist_theta(gen);
-    //}
 }
 
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
