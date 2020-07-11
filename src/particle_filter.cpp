@@ -316,11 +316,11 @@ void ParticleFilter::resample() {
      /* Random number engine class that generates pseudo random numbers */
      std::default_random_engine gen;
      ///* Create a vector for weights */
-     //std::vector<double> weights;
+     std::vector<double> weights;
 
      /* Update the weights vector */
      for (int idx = 0; idx < particles_.size(); idx++) {
-         weights_[idx] = particles_[idx].weight;
+         weights.push_back(particles_[idx].weight);
      }
 
      /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
