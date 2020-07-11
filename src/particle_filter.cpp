@@ -225,7 +225,7 @@ void ParticleFilter::resample() {
          weights.push_back(particles_[idx].weight);
      }
 
-     /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
+     /* std::discrete_distribution produces random integers on the interval [0, n), where the probability
      of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
      std::discrete_distribution<size_t> distr_index(weights.begin(), weights.end());
 
