@@ -320,9 +320,10 @@ const std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates
 }
 
 const std::vector<LandmarkObs>& ParticleFilter::get_global_coordinates(const Map& map_landmarks, Particle& particle, double sensor_range) {
+    /* Initialize vector to store the global co-ordinates */
+    std::vector<LandmarkObs> global_cordinates{};
+
     for (const auto& glob_cord : map_landmarks.landmark_list) {
-        /* Initialize vector to store the global co-ordinates */
-        std::vector<LandmarkObs> global_cordinates{};
         /* Define structure for landmark */
         LandmarkObs map{};
         double x_p{}, y_p{};
@@ -344,10 +345,10 @@ const std::vector<LandmarkObs>& ParticleFilter::get_global_coordinates(const Map
 
             /* Update the global co-ordinate structure */
             global_cordinates.push_back(map);
-        }
-
-        return global_cordinates;
+        }        
     }
+
+    return global_cordinates;
 }
 
 void ParticleFilter::update_particle_weight(const std::vector<LandmarkObs>& transformed_cordinates, const std::vector<LandmarkObs>& global_cordinates,
