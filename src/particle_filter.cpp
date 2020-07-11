@@ -278,7 +278,7 @@ string ParticleFilter::getSenseCoord(Particle best, string coord) {
     return s;
 }
 
-std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates(const vector<LandmarkObs>& observations, Particle &particle) {
+std::vector<LandmarkObs> ParticleFilter::transform_car_to_map_coordinates(const vector<LandmarkObs>& observations, Particle &particle) {
 
     /* Initialize particle x, y co-ordinates, and its sine and cos theta */
     double x_p{}, y_p{}, sin_theta{}, cos_theta{};
@@ -320,7 +320,7 @@ std::vector<LandmarkObs>& ParticleFilter::transform_car_to_map_coordinates(const
     return transformed_cordinates;
 }
 
-std::vector<LandmarkObs>& ParticleFilter::get_global_coordinates(const Map& map_landmarks, Particle& particle, double sensor_range) {
+std::vector<LandmarkObs> ParticleFilter::get_global_coordinates(const Map& map_landmarks, Particle& particle, double sensor_range) {
 
     /* Initialize vector to store the global co-ordinates */
     std::vector<LandmarkObs> global_cordinates{};
