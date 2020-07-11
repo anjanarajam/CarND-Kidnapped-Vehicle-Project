@@ -101,44 +101,44 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     std::normal_distribution<double> dist_y(0, std_y);
     std::normal_distribution<double> dist_theta(0, std_theta);
 
-    ///* Every particle is moved at certain distance at a certain heading after delta t */
-    //for_each(particles_.begin(), particles_.end(), [&](Particle particle)
-    //    {
-    //        if (fabs(yaw_rate) < 0.001) {
-    //            particle.x += velocity * delta_t * cos(particle.theta);
-    //            particle.y += velocity * delta_t * sin(particle.theta);
-    //        }
-    //        else {
-    //            particle.x += velocity / yaw_rate * (sin(particle.theta + yaw_rate * delta_t) - sin(particle.theta));
-    //            particle.y += velocity / yaw_rate * (cos(particle.theta) - cos(particle.theta + yaw_rate * delta_t));
-    //            particle.theta += yaw_rate * delta_t;
-    //        }
-
-    //        /* Add noise to every particle after upating it with motion */
-    //        particle.x += dist_x(gen);
-    //        particle.y += dist_y(gen);
-    //        particle.theta += dist_theta(gen);
-    //    });
-
-
     /* Every particle is moved at certain distance at a certain heading after delta t */
-    for (int i = 0; i < num_particles_; i++)
-    {
-        if (fabs(yaw_rate) < 0.001) {
-            particles_[i].x += velocity * delta_t * cos(particles_[i].theta);
-            particles_[i].y += velocity * delta_t * sin(particles_[i].theta);
-        }
-        else {
-            particles_[i].x += velocity / yaw_rate * (sin(particles_[i].theta + yaw_rate * delta_t) - sin(particles_[i].theta));
-            particles_[i].y += velocity / yaw_rate * (cos(particles_[i].theta) - cos(particles_[i].theta + yaw_rate * delta_t));
-            particles_[i].theta += yaw_rate * delta_t;
-        }
+    std::for_each(particles_.begin(), particles_.end(), [&](Particle &particle)
+        {
+            if (fabs(yaw_rate) < 0.001) {
+                particle.x += velocity * delta_t * cos(particle.theta);
+                particle.y += velocity * delta_t * sin(particle.theta);
+            }
+            else {
+                particle.x += velocity / yaw_rate * (sin(particle.theta + yaw_rate * delta_t) - sin(particle.theta));
+                particle.y += velocity / yaw_rate * (cos(particle.theta) - cos(particle.theta + yaw_rate * delta_t));
+                particle.theta += yaw_rate * delta_t;
+            }
 
-        /* Add noise to every particle after upating it with motion */
-        particles_[i].x += dist_x(gen);
-        particles_[i].y += dist_y(gen);
-        particles_[i].theta += dist_theta(gen);
-    }
+            /* Add noise to every particle after upating it with motion */
+            particle.x += dist_x(gen);
+            particle.y += dist_y(gen);
+            particle.theta += dist_theta(gen);
+        });
+
+
+    ///* Every particle is moved at certain distance at a certain heading after delta t */
+    //for (int i = 0; i < num_particles_; i++)
+    //{
+    //    if (fabs(yaw_rate) < 0.001) {
+    //        particles_[i].x += velocity * delta_t * cos(particles_[i].theta);
+    //        particles_[i].y += velocity * delta_t * sin(particles_[i].theta);
+    //    }
+    //    else {
+    //        particles_[i].x += velocity / yaw_rate * (sin(particles_[i].theta + yaw_rate * delta_t) - sin(particles_[i].theta));
+    //        particles_[i].y += velocity / yaw_rate * (cos(particles_[i].theta) - cos(particles_[i].theta + yaw_rate * delta_t));
+    //        particles_[i].theta += yaw_rate * delta_t;
+    //    }
+
+    //    /* Add noise to every particle after upating it with motion */
+    //    particles_[i].x += dist_x(gen);
+    //    particles_[i].y += dist_y(gen);
+    //    particles_[i].theta += dist_theta(gen);
+    //}
 }
 
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
@@ -334,23 +334,6 @@ void ParticleFilter::resample() {
 
      /* Copy it to the original particle vector */
      particles_ = std::move(new_particles);
-
-    //vector<double> p_weights;
-    //for (int i = 0; i < particles_.size(); i++) {
-    //    p_weights.push_back(particles_[i].weight);
-    //}
-    //std::vector<Particle> new_particles;
-    ///* Random number engine class that generates pseudo random numbers */
-    //std::default_random_engine gen;
-    ///*std::discrete_distribution produces random integers on the interval [0, n), where the probability
-    //of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
-    //std::discrete_distribution<size_t> distr_index(p_weights.begin(), p_weights.end());
-    ///* Create new particles with probability proportional to their weight */
-    //for (auto i = 0; i < particles_.size(); i++) {
-    //    new_particles.push_back(particles_[distr_index(gen)]);
-    //}
-    ///* Copy it to the original particle vector */
-    //particles_ = new_particles;
 }
 
 void ParticleFilter::SetAssociations(Particle& particle,
