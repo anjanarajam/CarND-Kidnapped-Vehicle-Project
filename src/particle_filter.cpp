@@ -102,7 +102,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     std::normal_distribution<double> dist_theta(0, std_theta);
 
     /* Every particle is moved at certain distance at a certain heading after delta t */
-    std::for_each(particles_.begin(), particles_.end(), [&](Particle &particle)
+    std::for_each(particles_.begin(), particles_.end(), [&](Particle particle)
         {
             if (fabs(yaw_rate) < 0.001) {
                 particle.x += velocity * delta_t * cos(particle.theta);
