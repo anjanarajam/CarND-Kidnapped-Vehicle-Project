@@ -325,7 +325,7 @@ void ParticleFilter::resample() {
 
      /*std::discrete_distribution produces random integers on the interval [0, n), where the probability
      of each individual integer i is defined as w i/S, that is the weight of the ith integer divided by the sum of all n weights.*/
-     std::discrete_distribution<size_t> distr_index(weights_.begin(), weights_.end());
+     std::discrete_distribution<size_t> distr_index(weights.begin(), weights.end());
 
      /* Create new particles with probability proportional to their weight */
      for (auto i = 0; i < particles_.size(); i++) {
